@@ -1,0 +1,5 @@
+export const CONFIG = {
+  SUPABASE_URL: 'https://your-project.supabase.co',
+  SUPABASE_ANON_KEY: 'your-anon-key',
+  API_BASE_URL: 'https://your-app.vercel.app',
+};
