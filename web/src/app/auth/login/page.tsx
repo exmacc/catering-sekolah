@@ -20,7 +20,7 @@ export default function LoginPage() {
     if (!result.success) {
       setError(result.error || 'Login gagal');
     } else {
-      window.location.href = '/order/history';
+      window.location.href = '/';
     }
   }
 

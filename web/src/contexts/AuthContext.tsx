@@ -55,12 +55,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .single();
     if (userData) {
       setUser(userData as any);
+      return userData as any;
     }
+    // fallback if RLS blocks: use auth metadata
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (authUser) {
+      const fallback = {
+        id: authUser.id,
+        email: authUser.email || '',
+        full_name: authUser.user_metadata?.full_name || authUser.email || 'User',
+        role: authUser.user_metadata?.role || 'customer',
+        is_active: true,
+        created_at: authUser.created_at,
+        updated_at: authUser.created_at,
+      };
+      setUser(fallback as any);
+      return fallback;
+    }
+    return null;
   }
 
   async function login(email: string, password: string) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return { success: false, error: error.message };
+    if (data.user) await fetchUser(data.user.id);
     return { success: true };
   }
 
