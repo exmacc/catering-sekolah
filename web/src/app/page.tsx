@@ -17,14 +17,15 @@ export default function CustomerMenusPage() {
   }, []);
 
   async function fetchMenus() {
-    const { data } = await supabase
-      .from('menus')
-      .select('*, items:menu_items(*)')
-      .eq('status', 'active')
-      .gte('available_date', new Date().toISOString().split('T')[0])
-      .order('available_date', { ascending: true });
-
-    if (data) setMenus(data);
+    try {
+      const res = await fetch('/api/menus?customer=true');
+      const result = await res.json();
+      if (result.success && result.data) {
+        setMenus(result.data.filter((m: Menu) => m.status === 'active'));
+      }
+    } catch {
+      // ignore
+    }
     setLoading(false);
   }
 
@@ -34,9 +35,21 @@ export default function CustomerMenusPage() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-emerald-700">Catering Sekolah</h1>
           <div className="flex items-center gap-4">
-            <Link href="/order/history" className="text-sm text-emerald-600 hover:underline">Riwayat</Link>
-            <span className="text-sm text-gray-600">{user?.full_name}</span>
-            <button onClick={logout} className="text-sm text-red-500 hover:underline">Keluar</button>
+            {user ? (
+              <>
+                {user.role === 'admin' && (
+                  <Link href="/admin" className="text-sm text-emerald-600 hover:underline font-medium">Admin</Link>
+                )}
+                <Link href="/order/history" className="text-sm text-emerald-600 hover:underline">Riwayat</Link>
+                <span className="text-sm text-gray-600">{user.full_name}</span>
+                <button onClick={logout} className="text-sm text-red-500 hover:underline">Keluar</button>
+              </>
+            ) : (
+              <>
+                <Link href="/auth/login" className="text-sm text-emerald-600 hover:underline">Masuk</Link>
+                <Link href="/auth/register" className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-sm hover:bg-emerald-700">Daftar</Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -49,7 +62,13 @@ export default function CustomerMenusPage() {
           <div className="text-center py-12 text-gray-500">Memuat menu...</div>
         ) : menus.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-xl shadow-sm">
-            <p className="text-gray-500">Belum ada menu tersedia. Silakan cek kembali nanti.</p>
+            <p className="text-gray-500 mb-2">Belum ada menu tersedia.</p>
+            <p className="text-sm text-gray-400">Admin belum membuat menu untuk hari ini. Silakan cek kembali nanti.</p>
+            {!user && (
+              <Link href="/auth/register" className="inline-block mt-4 text-emerald-600 hover:underline text-sm">
+                Daftar dulu biar siap pesan
+              </Link>
+            )}
           </div>
         ) : (
           <div className="space-y-6">
