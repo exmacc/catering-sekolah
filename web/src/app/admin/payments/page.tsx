@@ -76,7 +76,7 @@ export default function AdminPaymentsPage() {
                   <td className="text-slate-600">
                     {payment.payment_period === 'daily' ? 'Harian' : payment.payment_period === 'weekly' ? 'Mingguan' : 'Bulanan'}
                   </td>
-                  <td className="font-bold text-teal-700">{formatRupiah(payment.amount)}</td>
+                  <td className="font-bold text-violet-700">{formatRupiah(payment.amount)}</td>
                   <td>
                     <Badge tone={payment.status === 'paid' ? 'success' : payment.status === 'pending' ? 'warning' : 'danger'}>
                       {payment.status === 'pending' ? 'Menunggu' : payment.status === 'paid' ? 'Lunas' : payment.status}

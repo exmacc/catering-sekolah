@@ -26,20 +26,21 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const { id } = await params;
     const body = await req.json();
 
-    const { data, error } = await supabaseAdmin
-      .from('menus')
-      .update({
-        name: body.name,
-        description: body.description,
-        available_date: body.available_date,
-        order_deadline: body.order_deadline,
-        status: body.status,
-      })
-      .eq('id', id)
-      .select()
-      .single();
+    const updatePayload: Record<string, any> = {};
+    if (body.name !== undefined) updatePayload.name = body.name;
+    if (body.description !== undefined) updatePayload.description = body.description;
+    if (body.available_date !== undefined) updatePayload.available_date = body.available_date;
+    if (body.order_deadline !== undefined) updatePayload.order_deadline = body.order_deadline;
+    if (body.status !== undefined) updatePayload.status = body.status;
 
-    if (error) throw error;
+    if (Object.keys(updatePayload).length > 0) {
+      const { error } = await supabaseAdmin
+        .from('menus')
+        .update(updatePayload)
+        .eq('id', id);
+
+      if (error) throw error;
+    }
 
     if (body.items) {
       await supabaseAdmin.from('menu_items').delete().eq('menu_id', id);

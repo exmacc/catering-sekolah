@@ -40,7 +40,7 @@ export default function RegisterPage() {
     <div className="auth-wrap py-8">
       <div className="auth-card" style={{ width: 'min(520px, 100%)' }}>
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-xl text-white shadow-lg shadow-teal-500/25">🍱</div>
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-xl text-white shadow-lg shadow-violet-500/25">🍱</div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Daftar akun</h1>
           <p className="mt-1 text-sm text-slate-500">Data cukup diisi sekali, pesanan berikutnya lebih cepat</p>
         </div>
@@ -58,7 +58,7 @@ export default function RegisterPage() {
                   onClick={() => setForm({ ...form, customer_type: type })}
                   className={`rounded-xl border px-3 py-3 text-sm font-semibold transition ${
                     form.customer_type === type
-                      ? 'border-teal-500 bg-teal-50 text-teal-800'
+                      ? 'border-violet-500 bg-violet-50 text-violet-800'
                       : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                   }`}
                 >
@@ -112,7 +112,7 @@ export default function RegisterPage() {
         </form>
 
         <p className="mt-5 text-center text-sm text-slate-500">
-          Sudah punya akun? <Link href="/auth/login" className="font-semibold text-teal-700 hover:underline">Masuk</Link>
+          Sudah punya akun? <Link href="/auth/login" className="font-semibold text-violet-700 hover:underline">Masuk</Link>
         </p>
       </div>
     </div>

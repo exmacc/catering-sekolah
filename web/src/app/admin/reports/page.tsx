@@ -65,7 +65,7 @@ export default function AdminReportsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <div className="stat-card green">
           <div className="text-sm text-slate-500">Total pendapatan</div>
-          <div className="mt-2 text-2xl font-extrabold text-teal-700">{formatRupiah(summary?.total_revenue || 0)}</div>
+          <div className="mt-2 text-2xl font-extrabold text-violet-700">{formatRupiah(summary?.total_revenue || 0)}</div>
         </div>
         <div className="stat-card blue">
           <div className="text-sm text-slate-500">Total pesanan</div>
@@ -116,7 +116,7 @@ export default function AdminReportsPage() {
                   <td>{row.total_orders}</td>
                   <td className="text-violet-700">{formatRupiah(row.cash_revenue)}</td>
                   <td className="text-sky-700">{formatRupiah(row.transfer_revenue)}</td>
-                  <td className="font-bold text-teal-700">{formatRupiah(row.total_revenue)}</td>
+                  <td className="font-bold text-violet-700">{formatRupiah(row.total_revenue)}</td>
                 </tr>
               ))}
             </tbody>
@@ -126,7 +126,7 @@ export default function AdminReportsPage() {
                 <td className="font-bold">{dailyReport.reduce((s, r) => s + r.total_orders, 0)}</td>
                 <td className="font-bold">{formatRupiah(dailyReport.reduce((s, r) => s + r.cash_revenue, 0))}</td>
                 <td className="font-bold">{formatRupiah(dailyReport.reduce((s, r) => s + r.transfer_revenue, 0))}</td>
-                <td className="font-bold text-teal-700">{formatRupiah(totalRevenue)}</td>
+                <td className="font-bold text-violet-700">{formatRupiah(totalRevenue)}</td>
               </tr>
             </tfoot>
           </table>

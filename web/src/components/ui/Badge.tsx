@@ -1,11 +1,11 @@
 import { cn } from '@/lib/utils';
 
 const styles: Record<string, string> = {
-  success: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+  success: 'bg-violet-50 text-violet-700 border-violet-100',
   warning: 'bg-amber-50 text-amber-700 border-amber-100',
   danger: 'bg-red-50 text-red-700 border-red-100',
-  info: 'bg-sky-50 text-sky-700 border-sky-100',
-  purple: 'bg-violet-50 text-violet-700 border-violet-100',
+  info: 'bg-indigo-50 text-indigo-700 border-indigo-100',
+  purple: 'bg-purple-50 text-purple-700 border-purple-100',
   gray: 'bg-slate-100 text-slate-600 border-slate-200',
 };
 

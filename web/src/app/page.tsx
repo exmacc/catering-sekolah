@@ -38,7 +38,7 @@ export default function CustomerMenusPage() {
 
       <section className="shell pt-8 pb-4">
         <div className="card overflow-hidden">
-          <div className="grid md:grid-cols-[1.3fr_0.7fr]">
+          <div className="grid md:grid-cols-[1.35fr_0.65fr]">
             <div className="p-6 sm:p-8">
               <Badge tone="success">Menu harian siap dipesan</Badge>
               <h1 className="page-title mt-3 text-slate-900">
@@ -48,26 +48,32 @@ export default function CustomerMenusPage() {
                 Pilih makanan & minuman, tentukan metode bayar cash/transfer, serta periode harian, mingguan, atau bulanan.
               </p>
               <div className="mt-5 flex flex-wrap gap-2">
-                <span className="chip bg-teal-50 text-teal-700 border border-teal-100">Cash / Transfer</span>
-                <span className="chip bg-sky-50 text-sky-700 border border-sky-100">Harian · Mingguan · Bulanan</span>
-                <span className="chip bg-violet-50 text-violet-700 border border-violet-100">Data tersimpan</span>
+                <span className="chip border border-violet-100 bg-violet-50 text-violet-700">Cash / Transfer</span>
+                <span className="chip border border-indigo-100 bg-indigo-50 text-indigo-700">Harian · Mingguan · Bulanan</span>
+                <span className="chip border border-purple-100 bg-purple-50 text-purple-700">Data tersimpan</span>
               </div>
             </div>
-            <div className="bg-gradient-to-br from-teal-600 to-emerald-700 text-white p-6 sm:p-8 flex flex-col justify-between">
+            <div className="flex flex-col justify-between bg-gradient-to-br from-violet-600 to-purple-700 p-6 text-white sm:p-8">
               <div>
-                <div className="text-sm text-teal-100">Status akun</div>
+                <div className="text-sm text-violet-100">Status akun</div>
                 <div className="mt-1 text-xl font-bold">{user ? `Halo, ${user.full_name}` : 'Belum login'}</div>
-                <p className="mt-2 text-sm text-teal-50/90">
+                <p className="mt-2 text-sm text-violet-50/90">
                   {user
-                    ? 'Langsung pilih menu di bawah untuk pesan.'
+                    ? user.role === 'admin'
+                      ? 'Untuk kelola menu, buka Panel Admin di header.'
+                      : 'Langsung pilih menu di bawah untuk pesan.'
                     : 'Daftar sekali, besok pesan lagi tanpa isi data ulang.'}
                 </p>
               </div>
-              {!user && (
-                <Link href="/auth/register" className="btn mt-6 bg-white text-teal-800 hover:bg-teal-50">
+              {!user ? (
+                <Link href="/auth/register" className="btn mt-6 bg-white text-violet-800 hover:bg-violet-50">
                   Daftar sekarang
                 </Link>
-              )}
+              ) : user.role === 'admin' ? (
+                <Link href="/admin/menus" className="btn mt-6 bg-white text-violet-800 hover:bg-violet-50">
+                  Kelola & publish menu
+                </Link>
+              ) : null}
             </div>
           </div>
         </div>
@@ -97,29 +103,29 @@ export default function CustomerMenusPage() {
                 <div className="food-card-top">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <div className="text-xs uppercase tracking-wide text-teal-50/90">Tanggal saji</div>
+                      <div className="text-xs uppercase tracking-wide text-violet-50/90">Tanggal saji</div>
                       <div className="font-semibold">{formatDateShort(menu.available_date)}</div>
                     </div>
-                    <Badge tone="success" className="!bg-white/15 !text-white !border-white/20">Aktif</Badge>
+                    <Badge tone="success" className="!border-white/20 !bg-white/15 !text-white">Aktif</Badge>
                   </div>
                   <div>
                     <h3 className="text-xl font-extrabold leading-tight">{menu.name}</h3>
-                    {menu.description && <p className="mt-1 text-sm text-teal-50/90 line-clamp-2">{menu.description}</p>}
+                    {menu.description && <p className="mt-1 line-clamp-2 text-sm text-violet-50/90">{menu.description}</p>}
                   </div>
                 </div>
 
-                <div className="p-4 space-y-2.5">
+                <div className="space-y-2.5 p-4">
                   {(menu.items || []).filter((i) => i.is_available).slice(0, 4).map((item) => (
                     <div key={item.id} className="item-pill">
                       <div className="min-w-0">
                         <div className="truncate text-sm font-semibold text-slate-800">{item.name}</div>
                         <div className="text-[11px] text-slate-500">{item.category === 'food' ? 'Makanan' : 'Minuman'}</div>
                       </div>
-                      <div className="text-sm font-bold text-teal-700 whitespace-nowrap">{formatRupiah(item.price)}</div>
+                      <div className="whitespace-nowrap text-sm font-bold text-violet-700">{formatRupiah(item.price)}</div>
                     </div>
                   ))}
                   {(menu.items?.length || 0) > 4 && (
-                    <div className="text-xs text-slate-500 px-1">+{(menu.items?.length || 0) - 4} item lainnya</div>
+                    <div className="px-1 text-xs text-slate-500">+{(menu.items?.length || 0) - 4} item lainnya</div>
                   )}
 
                   <div className="pt-2">

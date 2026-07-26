@@ -134,11 +134,11 @@ export default function OrderPage() {
                 return (
                   <div
                     key={item.id}
-                    className={`rounded-2xl border p-4 transition ${selected ? 'border-teal-500 bg-teal-50/50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
+                    className={`rounded-2xl border p-4 transition ${selected ? 'border-violet-500 bg-violet-50/50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
                   >
                     <div className="flex items-start justify-between gap-3 cursor-pointer" onClick={() => toggleItem(item.id)}>
                       <div className="flex items-start gap-3">
-                        <input type="checkbox" checked={selected} onChange={() => toggleItem(item.id)} className="mt-1 accent-teal-600" />
+                        <input type="checkbox" checked={selected} onChange={() => toggleItem(item.id)} className="mt-1 accent-violet-600" />
                         <div>
                           <div className="font-semibold text-slate-900">{item.name}</div>
                           <div className="mt-1">
@@ -148,7 +148,7 @@ export default function OrderPage() {
                           </div>
                         </div>
                       </div>
-                      <div className="font-bold text-teal-700">{formatRupiah(item.price)}</div>
+                      <div className="font-bold text-violet-700">{formatRupiah(item.price)}</div>
                     </div>
 
                     {selected && (
@@ -179,7 +179,7 @@ export default function OrderPage() {
                     key={opt.id}
                     type="button"
                     onClick={() => setPaymentMethod(opt.id)}
-                    className={`rounded-2xl border p-3 text-left transition ${paymentMethod === opt.id ? 'border-teal-500 bg-teal-50' : 'border-slate-200 hover:bg-slate-50'}`}
+                    className={`rounded-2xl border p-3 text-left transition ${paymentMethod === opt.id ? 'border-violet-500 bg-violet-50' : 'border-slate-200 hover:bg-slate-50'}`}
                   >
                     <div className="font-semibold text-slate-900">{opt.label}</div>
                     <div className="text-xs text-slate-500">{opt.desc}</div>
@@ -196,8 +196,8 @@ export default function OrderPage() {
                   { id: 'weekly', label: 'Mingguan' },
                   { id: 'monthly', label: 'Bulanan' },
                 ] as const).map((opt) => (
-                  <label key={opt.id} className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer ${paymentPeriod === opt.id ? 'border-teal-500 bg-teal-50' : 'border-slate-200'}`}>
-                    <input type="radio" name="payment_period" checked={paymentPeriod === opt.id} onChange={() => setPaymentPeriod(opt.id)} className="accent-teal-600" />
+                  <label key={opt.id} className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer ${paymentPeriod === opt.id ? 'border-violet-500 bg-violet-50' : 'border-slate-200'}`}>
+                    <input type="radio" name="payment_period" checked={paymentPeriod === opt.id} onChange={() => setPaymentPeriod(opt.id)} className="accent-violet-600" />
                     <span className="font-medium text-slate-800">{opt.label}</span>
                   </label>
                 ))}
@@ -215,10 +215,10 @@ export default function OrderPage() {
           )}
 
           <div className="lg:col-span-2 sticky bottom-4">
-            <div className="card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-teal-100 bg-white/95 backdrop-blur">
+            <div className="card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-violet-100 bg-white/95 backdrop-blur">
               <div>
                 <div className="text-sm text-slate-500">Total pesanan ({Object.keys(cart).length} item)</div>
-                <div className="text-2xl font-extrabold text-teal-700">{formatRupiah(getTotal())}</div>
+                <div className="text-2xl font-extrabold text-violet-700">{formatRupiah(getTotal())}</div>
               </div>
               <button type="submit" disabled={submitting || Object.keys(cart).length === 0} className="btn btn-primary min-w-[180px]">
                 {submitting ? 'Memproses...' : 'Konfirmasi pesanan'}

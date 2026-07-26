@@ -28,7 +28,7 @@ export default function LoginPage() {
     <div className="auth-wrap">
       <div className="auth-card">
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-xl text-white shadow-lg shadow-teal-500/25">🍱</div>
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-xl text-white shadow-lg shadow-violet-500/25">🍱</div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Masuk akun</h1>
           <p className="mt-1 text-sm text-slate-500">Akses menu, pesanan, dan riwayat pembayaran</p>
         </div>
@@ -52,7 +52,7 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-5 text-center text-sm text-slate-500">
-          Belum punya akun? <Link href="/auth/register" className="font-semibold text-teal-700 hover:underline">Daftar</Link>
+          Belum punya akun? <Link href="/auth/register" className="font-semibold text-violet-700 hover:underline">Daftar</Link>
         </p>
         <div className="mt-3 text-center">
           <Link href="/" className="text-sm text-slate-400 hover:text-slate-600">← Kembali ke beranda</Link>
