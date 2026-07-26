@@ -23,6 +23,11 @@ export default function AdminMenusPage() {
     setLoading(false);
   }
 
+  function customerUrl(menuId: string) {
+    if (typeof window === 'undefined') return `/order/${menuId}`;
+    return `${window.location.origin}/order/${menuId}`;
+  }
+
   async function setStatus(id: string, status: 'active' | 'closed') {
     setBusyId(id);
     await fetch(`/api/menus/${id}`, {
@@ -34,15 +39,21 @@ export default function AdminMenusPage() {
     setBusyId(null);
   }
 
-  async function copyCustomerLink(menuId: string) {
-    const url = `${window.location.origin}/order/${menuId}`;
+  async function copyCustomerLink(menu: Menu) {
+    const url = customerUrl(menu.id);
     try {
       await navigator.clipboard.writeText(url);
-      setCopiedId(menuId);
+      setCopiedId(menu.id);
       setTimeout(() => setCopiedId(null), 2000);
     } catch {
-      prompt('Salin link ini untuk dikirim ke customer:', url);
+      prompt('Salin link ini:', url);
     }
+  }
+
+  function shareWhatsApp(menu: Menu) {
+    const url = customerUrl(menu.id);
+    const text = `Halo, silakan pesan catering sekolah:\n*${menu.name}*\nTanggal saji: ${formatDateShort(menu.available_date)}\n\nBuka link ini untuk pesan langsung:\n${url}\n\n(Login/daftar sekali saja, data tersimpan)`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   }
 
   if (loading) return <Loading />;
@@ -51,47 +62,56 @@ export default function AdminMenusPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="page-title">Menu catering</h1>
-          <p className="page-sub">Buat menu H-1 → publish → kirim link ke customer</p>
+          <h1 className="page-title">Menu harian</h1>
+          <p className="page-sub">Publish → salin/kirim link → customer pesan langsung</p>
         </div>
-        <Link href="/admin/menus/new" className="btn btn-primary">+ Buat menu baru</Link>
+        <Link href="/admin/menus/new" className="btn btn-primary">+ Buat menu harian</Link>
       </div>
 
       <section className="card p-5">
-        <h2 className="mb-3 font-bold text-slate-900">Cara publish ke customer</h2>
-        <div className="grid gap-3 md:grid-cols-3">
+        <h2 className="mb-3 font-bold text-slate-900">Alur kirim link ke customer</h2>
+        <div className="grid gap-3 md:grid-cols-4">
           <div className="guide-step">
             <div className="guide-num">1</div>
             <div>
-              <div className="font-semibold text-slate-800">Buat menu</div>
-              <div className="text-sm text-slate-500">Isi tanggal saji + item (makanan/minuman) + harga</div>
+              <div className="font-semibold text-slate-800">Buat menu harian</div>
+              <div className="text-sm text-slate-500">Pilih item dari Daftar Menu master</div>
             </div>
           </div>
           <div className="guide-step">
             <div className="guide-num">2</div>
             <div>
-              <div className="font-semibold text-slate-800">Publish (Aktifkan)</div>
-              <div className="text-sm text-slate-500">Status harus <b>Aktif</b> agar tampil di beranda customer</div>
+              <div className="font-semibold text-slate-800">Publish</div>
+              <div className="text-sm text-slate-500">Status harus Aktif</div>
             </div>
           </div>
           <div className="guide-step">
             <div className="guide-num">3</div>
             <div>
               <div className="font-semibold text-slate-800">Kirim link</div>
-              <div className="text-sm text-slate-500">Salin link menu, kirim via WhatsApp ke orang tua/guru</div>
+              <div className="text-sm text-slate-500">Salin atau bagikan via WhatsApp</div>
+            </div>
+          </div>
+          <div className="guide-step">
+            <div className="guide-num">4</div>
+            <div>
+              <div className="font-semibold text-slate-800">Customer pesan</div>
+              <div className="text-sm text-slate-500">Buka link → pilih item → bayar</div>
             </div>
           </div>
         </div>
-        <div className="mt-4 rounded-xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm text-violet-800">
-          <b>Catatan:</b> Kategori item saat ini = <b>Makanan</b> atau <b>Minuman</b> (dipilih saat menambah item di form menu). Tidak perlu menu terpisah untuk “kategori”.
+        <div className="mt-4 rounded-xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm text-violet-900">
+          Contoh link: <code className="rounded bg-white px-1.5 py-0.5 text-xs">https://catering-sekolah.vercel.app/order/ID-MENU</code>
+          <br />
+          Customer yang sudah pernah daftar cukup login; data anak/kelas tidak perlu diisi ulang.
         </div>
       </section>
 
       {menus.length === 0 ? (
         <EmptyState
-          title="Belum ada menu"
-          description="Buat menu pertama, lalu publish agar customer bisa pesan."
-          action={<Link href="/admin/menus/new" className="btn btn-primary">Buat menu pertama</Link>}
+          title="Belum ada menu harian"
+          description="Buat menu harian dulu, publish, lalu kirim link ke orang tua/guru."
+          action={<Link href="/admin/menus/new" className="btn btn-primary">Buat menu harian</Link>}
         />
       ) : (
         <div className="space-y-4">
@@ -107,31 +127,32 @@ export default function AdminMenusPage() {
                   </div>
                   <p className="text-sm text-slate-500">Tanggal saji: {formatDateShort(menu.available_date)}</p>
                   {menu.description && <p className="mt-2 text-sm text-slate-600">{menu.description}</p>}
+                  {menu.status === 'active' && (
+                    <div className="mt-2 break-all rounded-lg bg-slate-50 px-3 py-2 font-mono text-xs text-slate-600">
+                      /order/{menu.id}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-wrap gap-2">
                   <Link href={`/admin/menus/${menu.id}`} className="btn btn-secondary !px-3 !py-2 text-sm">Edit</Link>
 
                   {menu.status === 'active' ? (
-                    <button
-                      onClick={() => setStatus(menu.id, 'closed')}
-                      disabled={busyId === menu.id}
-                      className="btn btn-secondary !px-3 !py-2 text-sm"
-                    >
+                    <button onClick={() => setStatus(menu.id, 'closed')} disabled={busyId === menu.id} className="btn btn-secondary !px-3 !py-2 text-sm">
                       {busyId === menu.id ? '...' : 'Tutup publish'}
                     </button>
                   ) : (
-                    <button
-                      onClick={() => setStatus(menu.id, 'active')}
-                      disabled={busyId === menu.id}
-                      className="btn btn-primary !px-3 !py-2 text-sm"
-                    >
-                      {busyId === menu.id ? '...' : 'Publish ke customer'}
+                    <button onClick={() => setStatus(menu.id, 'active')} disabled={busyId === menu.id} className="btn btn-primary !px-3 !py-2 text-sm">
+                      {busyId === menu.id ? '...' : 'Publish'}
                     </button>
                   )}
 
-                  <button onClick={() => copyCustomerLink(menu.id)} className="btn btn-secondary !px-3 !py-2 text-sm">
-                    {copiedId === menu.id ? 'Link disalin ✓' : 'Salin link customer'}
+                  <button onClick={() => copyCustomerLink(menu)} className="btn btn-secondary !px-3 !py-2 text-sm" disabled={menu.status !== 'active'}>
+                    {copiedId === menu.id ? 'Link disalin ✓' : 'Salin link'}
+                  </button>
+
+                  <button onClick={() => shareWhatsApp(menu)} className="btn btn-primary !px-3 !py-2 text-sm" disabled={menu.status !== 'active'}>
+                    Kirim WA
                   </button>
                 </div>
               </div>
@@ -141,18 +162,12 @@ export default function AdminMenusPage() {
                   <div key={item.id} className="item-pill">
                     <div>
                       <div className="text-sm font-semibold text-slate-800">{item.name}</div>
-                      <div className="text-[11px] text-slate-500">{item.category === 'food' ? 'Kategori: Makanan' : 'Kategori: Minuman'}</div>
+                      <div className="text-[11px] text-slate-500">{item.category === 'food' ? 'Makanan' : 'Minuman'}</div>
                     </div>
                     <div className="text-sm font-bold text-violet-700">{formatRupiah(item.price)}</div>
                   </div>
                 ))}
               </div>
-
-              {menu.status === 'active' && (
-                <div className="mt-4 rounded-xl border border-violet-100 bg-violet-50/70 px-3 py-2 text-xs text-violet-800">
-                  Link customer: <span className="font-mono">/order/{menu.id}</span> — atau bagikan beranda <span className="font-mono">/</span>
-                </div>
-              )}
             </article>
           ))}
         </div>

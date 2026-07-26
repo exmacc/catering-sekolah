@@ -1,11 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
-export default function LoginPage() {
+function LoginForm() {
   const { login } = useAuth();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const next = searchParams.get('next') || '/';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -20,7 +24,7 @@ export default function LoginPage() {
     if (!result.success) {
       setError(result.error || 'Login gagal');
     } else {
-      window.location.href = '/';
+      router.replace(next.startsWith('/') ? next : '/');
     }
   }
 
@@ -30,7 +34,11 @@ export default function LoginPage() {
         <div className="mb-6 text-center">
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-xl text-white shadow-lg shadow-violet-500/25">🍱</div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Masuk akun</h1>
-          <p className="mt-1 text-sm text-slate-500">Akses menu, pesanan, dan riwayat pembayaran</p>
+          <p className="mt-1 text-sm text-slate-500">
+            {next.startsWith('/order/')
+              ? 'Setelah masuk, Anda kembali ke halaman pesanan'
+              : 'Akses menu, pesanan, dan riwayat'}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -52,12 +60,25 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-5 text-center text-sm text-slate-500">
-          Belum punya akun? <Link href="/auth/register" className="font-semibold text-violet-700 hover:underline">Daftar</Link>
+          Belum punya akun?{' '}
+          <Link href={`/auth/register?next=${encodeURIComponent(next)}`} className="font-semibold text-violet-700 hover:underline">
+            Daftar
+          </Link>
         </p>
         <div className="mt-3 text-center">
-          <Link href="/" className="text-sm text-slate-400 hover:text-slate-600">← Kembali ke beranda</Link>
+          <Link href={next.startsWith('/') ? next : '/'} className="text-sm text-slate-400 hover:text-slate-600">
+            ← Kembali
+          </Link>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="auth-wrap text-slate-500">Memuat...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

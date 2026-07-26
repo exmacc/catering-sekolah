@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Menu } from '@/types';
@@ -10,9 +11,10 @@ import { Loading } from '@/components/ui/Loading';
 import { Badge } from '@/components/ui/Badge';
 
 export default function OrderPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const params = useParams();
   const router = useRouter();
+  const menuId = String(params.menuId || '');
   const [menu, setMenu] = useState<Menu | null>(null);
   const [cart, setCart] = useState<Record<string, number>>({});
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'transfer'>('cash');
@@ -23,17 +25,15 @@ export default function OrderPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) {
-      router.push('/auth/login');
-      return;
-    }
-    fetchMenu();
-  }, [user]);
+    if (menuId) fetchMenu();
+  }, [menuId]);
 
   async function fetchMenu() {
-    const res = await fetch(`/api/menus/${params.menuId}`);
+    setLoading(true);
+    const res = await fetch(`/api/menus/${menuId}`);
     const result = await res.json();
     if (result.success) setMenu(result.data);
+    else setMenu(null);
     setLoading(false);
   }
 
@@ -66,8 +66,16 @@ export default function OrderPage() {
     }, 0);
   }
 
+  const returnUrl = `/order/${menuId}`;
+  const loginHref = `/auth/login?next=${encodeURIComponent(returnUrl)}`;
+  const registerHref = `/auth/register?next=${encodeURIComponent(returnUrl)}`;
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!user) {
+      router.push(loginHref);
+      return;
+    }
     if (Object.keys(cart).length === 0) {
       setMessage('Pilih minimal 1 item');
       return;
@@ -79,7 +87,7 @@ export default function OrderPage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        customer_id: user!.id,
+        customer_id: user.id,
         menu_id: menu!.id,
         delivery_date: menu!.available_date,
         payment_method: paymentMethod,
@@ -96,11 +104,11 @@ export default function OrderPage() {
     else setMessage(result.error || 'Gagal memesan');
   }
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen">
         <CustomerHeader />
-        <Loading />
+        <Loading label="Memuat menu pesanan..." />
       </div>
     );
   }
@@ -109,7 +117,24 @@ export default function OrderPage() {
     return (
       <div className="min-h-screen">
         <CustomerHeader />
-        <div className="shell py-16 text-center text-slate-500">Menu tidak ditemukan</div>
+        <div className="shell py-16 text-center">
+          <h1 className="page-title">Menu tidak ditemukan</h1>
+          <p className="page-sub mb-4">Link mungkin salah, atau menu sudah ditutup admin.</p>
+          <Link href="/" className="btn btn-primary">Lihat menu tersedia</Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (menu.status !== 'active') {
+    return (
+      <div className="min-h-screen">
+        <CustomerHeader />
+        <div className="shell py-16 text-center">
+          <h1 className="page-title">Menu belum dibuka</h1>
+          <p className="page-sub mb-4">Menu ini belum dipublish / sudah ditutup. Hubungi admin catering.</p>
+          <Link href="/" className="btn btn-primary">Kembali ke beranda</Link>
+        </div>
       </div>
     );
   }
@@ -119,15 +144,33 @@ export default function OrderPage() {
       <CustomerHeader />
 
       <main className="shell py-6">
+        <div className="mb-4 rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm text-violet-900">
+          Anda membuka <b>link pesanan langsung</b> dari admin. Pilih item, lalu konfirmasi pesanan.
+          {!user && ' Login/daftar sekali — data tersimpan untuk pesanan berikutnya.'}
+        </div>
+
         <div className="mb-6">
           <Badge tone="info">{formatDateShort(menu.available_date)}</Badge>
           <h1 className="page-title mt-2">{menu.name}</h1>
           {menu.description && <p className="page-sub">{menu.description}</p>}
         </div>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-5">
+        {!user && (
+          <div className="card mb-5 flex flex-col gap-3 border-violet-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="font-bold text-slate-900">Login dulu untuk kirim pesanan</div>
+              <div className="text-sm text-slate-500">Setelah masuk, Anda kembali ke halaman ini otomatis.</div>
+            </div>
+            <div className="flex gap-2">
+              <Link href={loginHref} className="btn btn-secondary">Masuk</Link>
+              <Link href={registerHref} className="btn btn-primary">Daftar</Link>
+            </div>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-5 lg:grid-cols-[1.2fr_0.8fr]">
           <section className="card p-5 sm:p-6">
-            <h2 className="font-bold text-slate-900 mb-4">Pilih item</h2>
+            <h2 className="mb-4 font-bold text-slate-900">Pilih item</h2>
             <div className="space-y-3">
               {menu.items?.filter((i) => i.is_available).map((item) => {
                 const selected = !!cart[item.id];
@@ -136,7 +179,7 @@ export default function OrderPage() {
                     key={item.id}
                     className={`rounded-2xl border p-4 transition ${selected ? 'border-violet-500 bg-violet-50/50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
                   >
-                    <div className="flex items-start justify-between gap-3 cursor-pointer" onClick={() => toggleItem(item.id)}>
+                    <div className="flex cursor-pointer items-start justify-between gap-3" onClick={() => toggleItem(item.id)}>
                       <div className="flex items-start gap-3">
                         <input type="checkbox" checked={selected} onChange={() => toggleItem(item.id)} className="mt-1 accent-violet-600" />
                         <div>
@@ -152,7 +195,7 @@ export default function OrderPage() {
                     </div>
 
                     {selected && (
-                      <div className="mt-3 ml-7 flex items-center gap-3">
+                      <div className="ml-7 mt-3 flex items-center gap-3">
                         <span className="text-sm text-slate-500">Jumlah</span>
                         <div className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-1">
                           <button type="button" onClick={() => updateQuantity(item.id, cart[item.id] - 1)} className="h-8 w-8 rounded-lg hover:bg-slate-50">-</button>
@@ -169,11 +212,11 @@ export default function OrderPage() {
 
           <aside className="space-y-4">
             <section className="card p-5">
-              <h3 className="font-bold text-slate-900 mb-3">Metode pembayaran</h3>
+              <h3 className="mb-3 font-bold text-slate-900">Metode pembayaran</h3>
               <div className="grid grid-cols-2 gap-2">
                 {([
                   { id: 'cash', label: 'Cash', desc: 'Bayar di tempat' },
-                  { id: 'transfer', label: 'Transfer', desc: 'Auto via VA' },
+                  { id: 'transfer', label: 'Transfer', desc: 'Via rekening/VA' },
                 ] as const).map((opt) => (
                   <button
                     key={opt.id}
@@ -189,14 +232,14 @@ export default function OrderPage() {
             </section>
 
             <section className="card p-5">
-              <h3 className="font-bold text-slate-900 mb-3">Periode pembayaran</h3>
+              <h3 className="mb-3 font-bold text-slate-900">Periode pembayaran</h3>
               <div className="space-y-2">
                 {([
                   { id: 'daily', label: 'Harian' },
                   { id: 'weekly', label: 'Mingguan' },
                   { id: 'monthly', label: 'Bulanan' },
                 ] as const).map((opt) => (
-                  <label key={opt.id} className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer ${paymentPeriod === opt.id ? 'border-violet-500 bg-violet-50' : 'border-slate-200'}`}>
+                  <label key={opt.id} className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 ${paymentPeriod === opt.id ? 'border-violet-500 bg-violet-50' : 'border-slate-200'}`}>
                     <input type="radio" name="payment_period" checked={paymentPeriod === opt.id} onChange={() => setPaymentPeriod(opt.id)} className="accent-violet-600" />
                     <span className="font-medium text-slate-800">{opt.label}</span>
                   </label>
@@ -205,8 +248,8 @@ export default function OrderPage() {
             </section>
 
             <section className="card p-5">
-              <h3 className="font-bold text-slate-900 mb-3">Catatan</h3>
-              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className="field" rows={3} placeholder="Contoh: pedas level 1, tanpa cabe..." />
+              <h3 className="mb-3 font-bold text-slate-900">Catatan</h3>
+              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className="field" rows={3} placeholder="Contoh: tanpa cabe, antarkan ke kelas 5A..." />
             </section>
           </aside>
 
@@ -214,15 +257,21 @@ export default function OrderPage() {
             <div className="lg:col-span-2 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{message}</div>
           )}
 
-          <div className="lg:col-span-2 sticky bottom-4">
-            <div className="card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-violet-100 bg-white/95 backdrop-blur">
+          <div className="sticky bottom-4 lg:col-span-2">
+            <div className="card flex flex-col gap-4 border-violet-100 bg-white/95 p-4 backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <div>
                 <div className="text-sm text-slate-500">Total pesanan ({Object.keys(cart).length} item)</div>
                 <div className="text-2xl font-extrabold text-violet-700">{formatRupiah(getTotal())}</div>
               </div>
-              <button type="submit" disabled={submitting || Object.keys(cart).length === 0} className="btn btn-primary min-w-[180px]">
-                {submitting ? 'Memproses...' : 'Konfirmasi pesanan'}
-              </button>
+              {user ? (
+                <button type="submit" disabled={submitting || Object.keys(cart).length === 0} className="btn btn-primary min-w-[180px]">
+                  {submitting ? 'Memproses...' : 'Konfirmasi pesanan'}
+                </button>
+              ) : (
+                <Link href={loginHref} className="btn btn-primary min-w-[180px]">
+                  Masuk untuk pesan
+                </Link>
+              )}
             </div>
           </div>
         </form>

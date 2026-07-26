@@ -1,11 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
-export default function RegisterPage() {
+function RegisterForm() {
   const { register } = useAuth();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const next = searchParams.get('next') || '/';
   const [form, setForm] = useState({
     full_name: '',
     email: '',
@@ -32,7 +36,7 @@ export default function RegisterPage() {
     if (!result.success) {
       setError(result.error || 'Registrasi gagal');
     } else {
-      window.location.href = '/';
+      router.replace(next.startsWith('/') ? next : '/');
     }
   }
 
@@ -42,7 +46,11 @@ export default function RegisterPage() {
         <div className="mb-6 text-center">
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-xl text-white shadow-lg shadow-violet-500/25">🍱</div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Daftar akun</h1>
-          <p className="mt-1 text-sm text-slate-500">Data cukup diisi sekali, pesanan berikutnya lebih cepat</p>
+          <p className="mt-1 text-sm text-slate-500">
+            {next.startsWith('/order/')
+              ? 'Daftar sekali, lalu lanjut pesan dari link admin'
+              : 'Data cukup diisi sekali, pesanan berikutnya lebih cepat'}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -74,7 +82,7 @@ export default function RegisterPage() {
           </div>
 
           {form.customer_type === 'parent' ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <label className="label">Nama anak</label>
                 <input type="text" name="child_name" value={form.child_name} onChange={handleChange} className="field" required />
@@ -107,14 +115,25 @@ export default function RegisterPage() {
           </div>
 
           <button type="submit" disabled={loading} className="btn btn-primary w-full">
-            {loading ? 'Memproses...' : 'Buat akun'}
+            {loading ? 'Memproses...' : 'Buat akun & lanjut pesan'}
           </button>
         </form>
 
         <p className="mt-5 text-center text-sm text-slate-500">
-          Sudah punya akun? <Link href="/auth/login" className="font-semibold text-violet-700 hover:underline">Masuk</Link>
+          Sudah punya akun?{' '}
+          <Link href={`/auth/login?next=${encodeURIComponent(next)}`} className="font-semibold text-violet-700 hover:underline">
+            Masuk
+          </Link>
         </p>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="auth-wrap text-slate-500">Memuat...</div>}>
+      <RegisterForm />
+    </Suspense>
   );
 }
