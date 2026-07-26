@@ -1,14 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { Menu } from '@/types';
 import { formatRupiah, formatDateShort } from '@/lib/utils';
-import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
+import { CustomerHeader } from '@/components/customer/CustomerHeader';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { Loading } from '@/components/ui/Loading';
+import { Badge } from '@/components/ui/Badge';
 
 export default function CustomerMenusPage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [menus, setMenus] = useState<Menu[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,81 +33,104 @@ export default function CustomerMenusPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-emerald-700">Catering Sekolah</h1>
-          <div className="flex items-center gap-4">
-            {user ? (
-              <>
-                {user.role === 'admin' && (
-                  <Link href="/admin" className="text-sm text-emerald-600 hover:underline font-medium">Admin</Link>
-                )}
-                <Link href="/order/history" className="text-sm text-emerald-600 hover:underline">Riwayat</Link>
-                <span className="text-sm text-gray-600">{user.full_name}</span>
-                <button onClick={logout} className="text-sm text-red-500 hover:underline">Keluar</button>
-              </>
-            ) : (
-              <>
-                <Link href="/auth/login" className="text-sm text-emerald-600 hover:underline">Masuk</Link>
-                <Link href="/auth/register" className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-sm hover:bg-emerald-700">Daftar</Link>
-              </>
-            )}
+    <div className="min-h-screen pb-16">
+      <CustomerHeader />
+
+      <section className="shell pt-8 pb-4">
+        <div className="card overflow-hidden">
+          <div className="grid md:grid-cols-[1.3fr_0.7fr]">
+            <div className="p-6 sm:p-8">
+              <Badge tone="success">Menu harian siap dipesan</Badge>
+              <h1 className="page-title mt-3 text-slate-900">
+                Pesan catering sekolah<br className="hidden sm:block" /> lebih cepat & rapi
+              </h1>
+              <p className="page-sub max-w-xl">
+                Pilih makanan & minuman, tentukan metode bayar cash/transfer, serta periode harian, mingguan, atau bulanan.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <span className="chip bg-teal-50 text-teal-700 border border-teal-100">Cash / Transfer</span>
+                <span className="chip bg-sky-50 text-sky-700 border border-sky-100">Harian · Mingguan · Bulanan</span>
+                <span className="chip bg-violet-50 text-violet-700 border border-violet-100">Data tersimpan</span>
+              </div>
+            </div>
+            <div className="bg-gradient-to-br from-teal-600 to-emerald-700 text-white p-6 sm:p-8 flex flex-col justify-between">
+              <div>
+                <div className="text-sm text-teal-100">Status akun</div>
+                <div className="mt-1 text-xl font-bold">{user ? `Halo, ${user.full_name}` : 'Belum login'}</div>
+                <p className="mt-2 text-sm text-teal-50/90">
+                  {user
+                    ? 'Langsung pilih menu di bawah untuk pesan.'
+                    : 'Daftar sekali, besok pesan lagi tanpa isi data ulang.'}
+                </p>
+              </div>
+              {!user && (
+                <Link href="/auth/register" className="btn mt-6 bg-white text-teal-800 hover:bg-teal-50">
+                  Daftar sekarang
+                </Link>
+              )}
+            </div>
           </div>
         </div>
-      </header>
+      </section>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Menu Hari Ini</h2>
-        <p className="text-gray-600 mb-8">Pilih menu dan pesan makanan untuk anak Anda</p>
+      <main className="shell pt-4">
+        <div className="mb-5 flex items-end justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Menu tersedia</h2>
+            <p className="text-sm text-slate-500">Menu aktif mulai hari ini ke depan</p>
+          </div>
+          <div className="text-sm text-slate-500">{menus.length} menu</div>
+        </div>
 
         {loading ? (
-          <div className="text-center py-12 text-gray-500">Memuat menu...</div>
+          <Loading label="Memuat menu..." />
         ) : menus.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-xl shadow-sm">
-            <p className="text-gray-500 mb-2">Belum ada menu tersedia.</p>
-            <p className="text-sm text-gray-400">Admin belum membuat menu untuk hari ini. Silakan cek kembali nanti.</p>
-            {!user && (
-              <Link href="/auth/register" className="inline-block mt-4 text-emerald-600 hover:underline text-sm">
-                Daftar dulu biar siap pesan
-              </Link>
-            )}
-          </div>
+          <EmptyState
+            title="Belum ada menu tersedia"
+            description="Admin belum mempublikasikan menu untuk hari ini. Silakan cek kembali nanti."
+            action={!user ? <Link href="/auth/register" className="btn btn-primary">Daftar dulu</Link> : undefined}
+          />
         ) : (
-          <div className="space-y-6">
+          <div className="menu-grid">
             {menus.map((menu) => (
-              <div key={menu.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
+              <article key={menu.id} className="food-card">
+                <div className="food-card-top">
+                  <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{menu.name}</h3>
-                      <p className="text-sm text-gray-500">{formatDateShort(menu.available_date)}</p>
+                      <div className="text-xs uppercase tracking-wide text-teal-50/90">Tanggal saji</div>
+                      <div className="font-semibold">{formatDateShort(menu.available_date)}</div>
                     </div>
-                    <Link
-                      href={`/order/${menu.id}`}
-                      className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm hover:bg-emerald-700"
-                    >
-                      Pesan
-                    </Link>
+                    <Badge tone="success" className="!bg-white/15 !text-white !border-white/20">Aktif</Badge>
                   </div>
-
-                  {menu.description && <p className="text-gray-600 text-sm mb-4">{menu.description}</p>}
-
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {menu.items?.filter(i => i.is_available).map((item) => (
-                      <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                          <span className="text-sm font-medium text-gray-900">{item.name}</span>
-                          <span className={`text-xs ml-2 px-2 py-0.5 rounded ${item.category === 'food' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
-                            {item.category === 'food' ? 'Makanan' : 'Minuman'}
-                          </span>
-                        </div>
-                        <span className="text-sm font-semibold text-emerald-700">{formatRupiah(item.price)}</span>
-                      </div>
-                    ))}
+                  <div>
+                    <h3 className="text-xl font-extrabold leading-tight">{menu.name}</h3>
+                    {menu.description && <p className="mt-1 text-sm text-teal-50/90 line-clamp-2">{menu.description}</p>}
                   </div>
                 </div>
-              </div>
+
+                <div className="p-4 space-y-2.5">
+                  {(menu.items || []).filter((i) => i.is_available).slice(0, 4).map((item) => (
+                    <div key={item.id} className="item-pill">
+                      <div className="min-w-0">
+                        <div className="truncate text-sm font-semibold text-slate-800">{item.name}</div>
+                        <div className="text-[11px] text-slate-500">{item.category === 'food' ? 'Makanan' : 'Minuman'}</div>
+                      </div>
+                      <div className="text-sm font-bold text-teal-700 whitespace-nowrap">{formatRupiah(item.price)}</div>
+                    </div>
+                  ))}
+                  {(menu.items?.length || 0) > 4 && (
+                    <div className="text-xs text-slate-500 px-1">+{(menu.items?.length || 0) - 4} item lainnya</div>
+                  )}
+
+                  <div className="pt-2">
+                    {user ? (
+                      <Link href={`/order/${menu.id}`} className="btn btn-primary w-full">Pesan menu ini</Link>
+                    ) : (
+                      <Link href="/auth/login" className="btn btn-primary w-full">Masuk untuk pesan</Link>
+                    )}
+                  </div>
+                </div>
+              </article>
             ))}
           </div>
         )}

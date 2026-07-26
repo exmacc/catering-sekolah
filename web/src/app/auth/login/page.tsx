@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -25,50 +25,38 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link href="/" className="text-2xl font-bold text-emerald-700">Catering Sekolah</Link>
-          <p className="text-gray-600 mt-2">Masuk ke akun Anda</p>
+    <div className="auth-wrap">
+      <div className="auth-card">
+        <div className="mb-6 text-center">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-xl text-white shadow-lg shadow-teal-500/25">🍱</div>
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Masuk akun</h1>
+          <p className="mt-1 text-sm text-slate-500">Akses menu, pesanan, dan riwayat pembayaran</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-          {error && <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">{error}</div>}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && <div className="rounded-xl border border-red-100 bg-red-50 px-3 py-2.5 text-sm text-red-700">{error}</div>}
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-              required
-            />
+          <div>
+            <label className="label">Email</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="field" placeholder="nama@email.com" required />
           </div>
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-              required
-            />
+          <div>
+            <label className="label">Password</label>
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="field" placeholder="Minimal 6 karakter" required />
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 disabled:opacity-50"
-          >
+          <button type="submit" disabled={loading} className="btn btn-primary w-full">
             {loading ? 'Memproses...' : 'Masuk'}
           </button>
-
-          <p className="text-center mt-4 text-sm text-gray-600">
-            Belum punya akun? <Link href="/auth/register" className="text-emerald-600 hover:underline">Daftar</Link>
-          </p>
         </form>
+
+        <p className="mt-5 text-center text-sm text-slate-500">
+          Belum punya akun? <Link href="/auth/register" className="font-semibold text-teal-700 hover:underline">Daftar</Link>
+        </p>
+        <div className="mt-3 text-center">
+          <Link href="/" className="text-sm text-slate-400 hover:text-slate-600">← Kembali ke beranda</Link>
+        </div>
       </div>
     </div>
   );
