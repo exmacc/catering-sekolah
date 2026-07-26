@@ -182,6 +182,14 @@ export default function OrderPage() {
                     <div className="flex cursor-pointer items-start justify-between gap-3" onClick={() => toggleItem(item.id)}>
                       <div className="flex items-start gap-3">
                         <input type="checkbox" checked={selected} onChange={() => toggleItem(item.id)} className="mt-1 accent-violet-600" />
+                        <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-violet-50">
+                          {item.image_url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
+                          ) : (
+                            <div className="flex h-full items-center justify-center text-xl text-violet-300">🍽️</div>
+                          )}
+                        </div>
                         <div>
                           <div className="font-semibold text-slate-900">{item.name}</div>
                           <div className="mt-1">

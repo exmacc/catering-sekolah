@@ -37,12 +37,13 @@ export default function NewMenuPage() {
         price: item.price,
         category: item.category?.name?.toLowerCase().includes('minum') ? 'drink' : 'food',
         category_id: item.category_id || null,
+        image_url: item.image_url || null,
       },
     ]);
   }
 
   function addManual() {
-    setItems([...items, { name: '', description: '', price: 0, category: 'food' }]);
+    setItems([...items, { name: '', description: '', price: 0, category: 'food', image_url: null }]);
   }
 
   function removeItem(index: number) {
@@ -75,6 +76,8 @@ export default function NewMenuPage() {
           description: i.description,
           price: Number(i.price) || 0,
           category: i.category === 'drink' ? 'drink' : 'food',
+          image_url: i.image_url || null,
+          catalog_item_id: i.catalog_item_id || null,
         })),
         created_by: user?.id,
       }),
@@ -149,10 +152,20 @@ export default function NewMenuPage() {
                   key={item.id}
                   type="button"
                   onClick={() => addFromCatalog(item)}
-                  className="rounded-xl border border-violet-100 bg-violet-50/40 px-3 py-3 text-left hover:bg-violet-50"
+                  className="flex items-center gap-3 rounded-xl border border-violet-100 bg-violet-50/40 px-3 py-3 text-left hover:bg-violet-50"
                 >
-                  <div className="font-semibold text-slate-800">{item.name}</div>
-                  <div className="text-xs text-slate-500">{item.category?.name || 'Tanpa kategori'} · {formatRupiah(item.price)}</div>
+                  <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-white">
+                    {item.image_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={item.image_url} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-lg text-violet-300">🍽️</div>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="truncate font-semibold text-slate-800">{item.name}</div>
+                    <div className="text-xs text-slate-500">{item.category?.name || 'Tanpa kategori'} · {formatRupiah(item.price)}</div>
+                  </div>
                 </button>
               ))}
             </div>
@@ -175,8 +188,16 @@ export default function NewMenuPage() {
                     <div className="text-sm font-semibold text-slate-700">Item #{index + 1}</div>
                     <button type="button" onClick={() => removeItem(index)} className="text-sm text-red-500">Hapus</button>
                   </div>
-                  <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
-                    <div className="md:col-span-2">
+                  <div className="grid grid-cols-1 gap-3 md:grid-cols-[80px_1fr_1fr_1fr]">
+                    <div className="h-16 w-16 overflow-hidden rounded-xl bg-violet-50">
+                      {item.image_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={item.image_url} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-xl text-violet-300">🍽️</div>
+                      )}
+                    </div>
+                    <div>
                       <label className="label">Nama</label>
                       <input className="field" value={item.name} onChange={(e) => updateItem(index, 'name', e.target.value)} required />
                     </div>

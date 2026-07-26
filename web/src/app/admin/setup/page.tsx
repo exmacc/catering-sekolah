@@ -89,6 +89,9 @@ DROP POLICY IF EXISTS "public_read_settings" ON app_settings;
 DROP POLICY IF EXISTS "service_settings" ON app_settings;
 CREATE POLICY "public_read_settings" ON app_settings FOR SELECT USING (true);
 CREATE POLICY "service_settings" ON app_settings FOR ALL USING (true) WITH CHECK (true);
+
+-- Foto item master menu
+ALTER TABLE catalog_items ADD COLUMN IF NOT EXISTS image_url TEXT;
 `;
 
 export default function AdminSetupPage() {

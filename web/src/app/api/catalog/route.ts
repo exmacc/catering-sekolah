@@ -28,6 +28,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Nama dan harga wajib' }, { status: 400 });
     }
 
+    let image_url = body.image_url ?? null;
+    if (typeof image_url === 'string' && image_url.length > 900_000) {
+      return NextResponse.json({ success: false, error: 'Gambar terlalu besar (maks ~500KB)' }, { status: 400 });
+    }
+    if (image_url === '') image_url = null;
+
     const { data, error } = await supabaseAdmin
       .from('catalog_items')
       .insert({
@@ -36,6 +42,7 @@ export async function POST(req: NextRequest) {
         price: Number(body.price) || 0,
         category_id: body.category_id || null,
         is_available: body.is_available ?? true,
+        image_url,
       })
       .select('*, category:categories(*)')
       .single();

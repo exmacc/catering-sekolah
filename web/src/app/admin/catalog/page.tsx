@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { formatRupiah } from '@/lib/utils';
+import { fileToDataUrl } from '@/lib/image';
 import { Loading } from '@/components/ui/Loading';
 import { Badge } from '@/components/ui/Badge';
 
@@ -13,8 +14,18 @@ interface CatalogItem {
   price: number;
   category_id?: string;
   is_available: boolean;
+  image_url?: string | null;
   category?: Category;
 }
+
+const emptyForm = {
+  name: '',
+  description: '',
+  price: 0,
+  category_id: '',
+  is_available: true,
+  image_url: null as string | null,
+};
 
 export default function AdminCatalogPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -23,7 +34,8 @@ export default function AdminCatalogPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [editing, setEditing] = useState<CatalogItem | null>(null);
-  const [form, setForm] = useState({ name: '', description: '', price: 0, category_id: '', is_available: true });
+  const [form, setForm] = useState(emptyForm);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { load(); }, []);
 
@@ -39,6 +51,18 @@ export default function AdminCatalogPage() {
     setLoading(false);
   }
 
+  async function onImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setError('');
+      const dataUrl = await fileToDataUrl(file);
+      setForm((f) => ({ ...f, image_url: dataUrl }));
+    } catch (err: any) {
+      setError(err.message || 'Gagal memproses gambar');
+    }
+  }
+
   async function save(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -47,6 +71,7 @@ export default function AdminCatalogPage() {
       ...form,
       category_id: form.category_id || null,
       price: Number(form.price) || 0,
+      image_url: form.image_url,
     };
     const res = await fetch(editing ? `/api/catalog/${editing.id}` : '/api/catalog', {
       method: editing ? 'PUT' : 'POST',
@@ -56,11 +81,12 @@ export default function AdminCatalogPage() {
     const result = await res.json();
     setSaving(false);
     if (!result.success) {
-      setError(result.error || 'Gagal simpan');
+      setError(result.error || 'Gagal simpan. Jika kolom image_url belum ada, jalankan SQL di Pengaturan → Setup Database.');
       return;
     }
     setEditing(null);
-    setForm({ name: '', description: '', price: 0, category_id: '', is_available: true });
+    setForm(emptyForm);
+    if (fileRef.current) fileRef.current.value = '';
     load();
   }
 
@@ -76,7 +102,7 @@ export default function AdminCatalogPage() {
     <div className="space-y-6">
       <div>
         <h1 className="page-title">Daftar Menu (Master)</h1>
-        <p className="page-sub">CRUD item makanan/minuman + harga. Nanti dipilih saat buat Menu Harian untuk customer.</p>
+        <p className="page-sub">CRUD item + harga + foto. Dipilih saat buat Menu Harian.</p>
       </div>
 
       {error && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
@@ -104,13 +130,56 @@ export default function AdminCatalogPage() {
             <input className="field" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
           </div>
         </div>
+
+        <div>
+          <label className="label">Foto menu</label>
+          <div className="flex flex-wrap items-start gap-4">
+            <div className="h-24 w-24 overflow-hidden rounded-2xl border border-violet-100 bg-violet-50">
+              {form.image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={form.image_url} alt="Preview" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full items-center justify-center text-2xl text-violet-300">🍽️</div>
+              )}
+            </div>
+            <div className="space-y-2">
+              <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={onImageChange} className="text-sm" />
+              {form.image_url && (
+                <button
+                  type="button"
+                  className="btn btn-danger !px-3 !py-1.5 text-sm"
+                  onClick={() => {
+                    setForm((f) => ({ ...f, image_url: null }));
+                    if (fileRef.current) fileRef.current.value = '';
+                  }}
+                >
+                  Hapus foto
+                </button>
+              )}
+              <p className="text-xs text-slate-500">JPG/PNG/WebP. Otomatis dikompres (maks ~450KB).</p>
+            </div>
+          </div>
+        </div>
+
         <label className="flex items-center gap-2 text-sm text-slate-700">
           <input type="checkbox" checked={form.is_available} onChange={(e) => setForm({ ...form, is_available: e.target.checked })} className="accent-violet-600" />
           Tersedia untuk dipilih
         </label>
         <div className="flex gap-2">
           <button type="submit" disabled={saving} className="btn btn-primary">{saving ? 'Menyimpan...' : editing ? 'Update' : 'Tambah item'}</button>
-          {editing && <button type="button" className="btn btn-secondary" onClick={() => { setEditing(null); setForm({ name: '', description: '', price: 0, category_id: '', is_available: true }); }}>Batal</button>}
+          {editing && (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => {
+                setEditing(null);
+                setForm(emptyForm);
+                if (fileRef.current) fileRef.current.value = '';
+              }}
+            >
+              Batal
+            </button>
+          )}
         </div>
       </form>
 
@@ -118,6 +187,7 @@ export default function AdminCatalogPage() {
         <table>
           <thead>
             <tr>
+              <th>Foto</th>
               <th>Nama</th>
               <th>Kategori</th>
               <th>Harga</th>
@@ -128,6 +198,16 @@ export default function AdminCatalogPage() {
           <tbody>
             {items.map((item) => (
               <tr key={item.id}>
+                <td>
+                  <div className="h-12 w-12 overflow-hidden rounded-xl bg-violet-50">
+                    {item.image_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-lg text-violet-300">🍽️</div>
+                    )}
+                  </div>
+                </td>
                 <td>
                   <div className="font-semibold text-slate-800">{item.name}</div>
                   {item.description && <div className="text-xs text-slate-500">{item.description}</div>}
@@ -147,6 +227,7 @@ export default function AdminCatalogPage() {
                           price: item.price,
                           category_id: item.category_id || '',
                           is_available: item.is_available,
+                          image_url: item.image_url || null,
                         });
                       }}
                     >
@@ -159,7 +240,7 @@ export default function AdminCatalogPage() {
             ))}
           </tbody>
         </table>
-        {items.length === 0 && <div className="p-8 text-center text-slate-500">Belum ada item. Tambah kategori dulu, lalu isi daftar menu.</div>}
+        {items.length === 0 && <div className="p-8 text-center text-slate-500">Belum ada item. Tambah kategori dulu, lalu isi daftar menu + foto.</div>}
       </div>
     </div>
   );

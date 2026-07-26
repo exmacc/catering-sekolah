@@ -64,7 +64,9 @@ export async function POST(req: NextRequest) {
       name: item.name,
       description: item.description || null,
       price: item.price,
-      category: item.category,
+      category: item.category === 'drink' ? 'drink' : 'food',
+      image_url: item.image_url || null,
+      catalog_item_id: item.catalog_item_id || null,
     }));
 
     const { data: createdItems, error: itemsError } = await supabaseAdmin

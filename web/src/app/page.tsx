@@ -119,9 +119,19 @@ export default function CustomerMenusPage() {
                 <div className="space-y-2.5 p-4">
                   {(menu.items || []).filter((i) => i.is_available).slice(0, 4).map((item) => (
                     <div key={item.id} className="item-pill">
-                      <div className="min-w-0">
-                        <div className="truncate text-sm font-semibold text-slate-800">{item.name}</div>
-                        <div className="text-[11px] text-slate-500">{item.category === 'food' ? 'Makanan' : 'Minuman'}</div>
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-violet-50">
+                          {item.image_url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
+                          ) : (
+                            <div className="flex h-full items-center justify-center text-sm text-violet-300">🍽️</div>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="truncate text-sm font-semibold text-slate-800">{item.name}</div>
+                          <div className="text-[11px] text-slate-500">{item.category === 'food' ? 'Makanan' : 'Minuman'}</div>
+                        </div>
                       </div>
                       <div className="whitespace-nowrap text-sm font-bold text-violet-700">{formatRupiah(item.price)}</div>
                     </div>

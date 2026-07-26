@@ -53,8 +53,20 @@ export interface MenuItem {
   price: number;
   category: ItemCategory;
   is_available: boolean;
-  image_url?: string;
+  image_url?: string | null;
+  catalog_item_id?: string | null;
   created_at: string;
+}
+
+export interface CatalogItem {
+  id: string;
+  category_id?: string | null;
+  name: string;
+  description?: string;
+  price: number;
+  is_available: boolean;
+  image_url?: string | null;
+  created_at?: string;
 }
 
 export interface Order {

@@ -160,9 +160,19 @@ export default function AdminMenusPage() {
               <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
                 {menu.items?.map((item) => (
                   <div key={item.id} className="item-pill">
-                    <div>
-                      <div className="text-sm font-semibold text-slate-800">{item.name}</div>
-                      <div className="text-[11px] text-slate-500">{item.category === 'food' ? 'Makanan' : 'Minuman'}</div>
+                    <div className="flex min-w-0 items-center gap-2">
+                      <div className="h-9 w-9 shrink-0 overflow-hidden rounded-lg bg-violet-50">
+                        {item.image_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={item.image_url} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="flex h-full items-center justify-center text-xs text-violet-300">🍽️</div>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="truncate text-sm font-semibold text-slate-800">{item.name}</div>
+                        <div className="text-[11px] text-slate-500">{item.category === 'food' ? 'Makanan' : 'Minuman'}</div>
+                      </div>
                     </div>
                     <div className="text-sm font-bold text-violet-700">{formatRupiah(item.price)}</div>
                   </div>
