@@ -11,6 +11,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   register: (data: any) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType>({
   login: async () => ({ success: false }),
   register: async () => ({ success: false }),
   logout: async () => {},
+  refreshUser: async () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -28,9 +30,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     checkUser();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        fetchUser(session.user.id);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.access_token) {
+        await fetchUserFromApi(session.access_token);
       } else {
         setUser(null);
       }
@@ -41,44 +43,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function checkUser() {
     const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-      await fetchUser(session.user.id);
+    if (session?.access_token) {
+      await fetchUserFromApi(session.access_token);
     }
     setLoading(false);
   }
 
-  async function fetchUser(userId: string) {
-    const { data: userData } = await supabase
-      .from('users')
-      .select('*, customer:customers(*)')
-      .eq('id', userId)
-      .single();
-    if (userData) {
-      setUser(userData as any);
-      return userData as any;
+  async function fetchUserFromApi(accessToken: string) {
+    try {
+      const res = await fetch('/api/auth/me', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const result = await res.json();
+      if (result.success && result.data) {
+        setUser(result.data);
+        return result.data;
+      }
+    } catch {
+      // ignore
     }
-    // fallback if RLS blocks: use auth metadata
-    const { data: { user: authUser } } = await supabase.auth.getUser();
-    if (authUser) {
-      const fallback = {
-        id: authUser.id,
-        email: authUser.email || '',
-        full_name: authUser.user_metadata?.full_name || authUser.email || 'User',
-        role: authUser.user_metadata?.role || 'customer',
-        is_active: true,
-        created_at: authUser.created_at,
-        updated_at: authUser.created_at,
-      };
-      setUser(fallback as any);
-      return fallback;
-    }
+    setUser(null);
     return null;
+  }
+
+  async function refreshUser() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.access_token) await fetchUserFromApi(session.access_token);
   }
 
   async function login(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return { success: false, error: error.message };
-    if (data.user) await fetchUser(data.user.id);
+    if (data.session?.access_token) await fetchUserFromApi(data.session.access_token);
     return { success: true };
   }
 
@@ -90,8 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     const result = await res.json();
     if (!result.success) return { success: false, error: result.error };
-    await login(data.email, data.password);
-    return { success: true };
+    return login(data.email, data.password);
   }
 
   async function logout() {
@@ -101,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

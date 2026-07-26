@@ -60,7 +60,7 @@ export default function CustomerMenusPage() {
                 <p className="mt-2 text-sm text-violet-50/90">
                   {user
                     ? user.role === 'admin'
-                      ? 'Untuk kelola menu, buka Panel Admin di header.'
+                      ? 'Kelola kategori, daftar menu, publish harian, dan keuangan lewat Panel Admin.'
                       : 'Langsung pilih menu di bawah untuk pesan.'
                     : 'Daftar sekali, besok pesan lagi tanpa isi data ulang.'}
                 </p>
