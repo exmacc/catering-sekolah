@@ -8,6 +8,7 @@ import { Icon } from '@/components/admin/AdminIcons';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: 'dashboard' },
+  { href: '/admin/setup', label: '⚠️ Setup DB', icon: 'menu' },
   { href: '/admin/categories', label: 'Kategori', icon: 'menu' },
   { href: '/admin/catalog', label: 'Daftar Menu', icon: 'menu' },
   { href: '/admin/menus', label: 'Menu Harian', icon: 'order' },
