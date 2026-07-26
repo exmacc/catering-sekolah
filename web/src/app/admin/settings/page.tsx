@@ -104,7 +104,8 @@ export default function AdminSettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <h1 className="page-title">Pengaturan branding</h1>
+        <p className="mb-1 text-sm font-medium text-violet-700">Pengaturan → Nama & Logo</p>
+        <h1 className="page-title">Nama & Logo</h1>
         <p className="page-sub">Ubah nama catering & logo — langsung tampil di web customer</p>
       </div>
 

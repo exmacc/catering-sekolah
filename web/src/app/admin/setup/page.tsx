@@ -122,7 +122,8 @@ export default function AdminSetupPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <h1 className="page-title">Setup database (WAJIB)</h1>
+        <p className="mb-1 text-sm font-medium text-violet-700">Pengaturan → Setup Database</p>
+        <h1 className="page-title">Setup Database</h1>
         <p className="page-sub">
           Error <b>Could not find the table public.categories</b> artinya tabel belum dibuat di Supabase.
         </p>
