@@ -21,8 +21,8 @@ const mainNav = [
 ];
 
 const settingsChildren = [
-  { href: '/admin/settings', label: 'Nama & Logo', icon: 'brand', desc: 'Branding web customer' },
-  { href: '/admin/setup', label: 'Setup Database', icon: 'database', desc: 'Migrasi & cek tabel' },
+  { href: '/admin/settings', label: 'Nama & Logo', icon: 'brand' },
+  { href: '/admin/setup', label: 'Setup Database', icon: 'database' },
 ];
 
 function isActive(pathname: string, href: string, exact?: boolean) {
@@ -65,12 +65,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {mainNav.map((item) => {
         const active = isActive(pathname, item.href, item.exact);
         return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={onClick}
-            className={`admin-nav-link ${active ? 'active' : ''}`}
-          >
+          <Link key={item.href} href={item.href} onClick={onClick} className={`admin-nav-link ${active ? 'active' : ''}`}>
             <Icon name={item.icon} />
             <span>{item.label}</span>
           </Link>
@@ -85,14 +80,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         >
           <Icon name="settings" />
           <span className="flex-1 text-left">Pengaturan</span>
-          <Icon
-            name="chevron"
-            className={`h-4 w-4 transition-transform ${settingsOpen ? 'rotate-180' : ''}`}
-          />
+          <Icon name="chevron" className={`h-4 w-4 transition-transform ${settingsOpen ? 'rotate-180' : ''}`} />
         </button>
 
         {settingsOpen && (
-          <div className="ml-3 mt-1 space-y-0.5 border-l border-white/15 pl-2">
+          <div className="ml-3 mt-1 space-y-0.5 border-l border-slate-200 pl-2">
             {settingsChildren.map((item) => {
               const active = isActive(pathname, item.href);
               return (
@@ -118,10 +110,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="admin-side">
         <div className="mb-6 px-2">
           <div className="flex items-center gap-3">
-            <BrandLogo size={44} className="!rounded-2xl ring-2 ring-white/20" />
+            <BrandLogo size={44} className="!rounded-2xl ring-1 ring-slate-200" />
             <div className="min-w-0">
-              <div className="font-extrabold tracking-tight">Panel Admin</div>
-              <div className="truncate text-xs text-white/60">{branding.business_name}</div>
+              <div className="font-extrabold tracking-tight text-slate-900">Panel Admin</div>
+              <div className="truncate text-xs text-slate-500">{branding.business_name}</div>
             </div>
           </div>
         </div>
@@ -130,30 +122,39 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Nav />
         </div>
 
-        <div className="mt-4 border-t border-white/10 pt-4">
+        <div className="mt-4 border-t border-slate-200 pt-4">
           <div className="mb-3 px-2">
-            <div className="text-sm font-semibold">{user.full_name}</div>
-            <div className="text-xs text-white/60">{user.email}</div>
+            <div className="text-sm font-semibold text-slate-800">{user.full_name}</div>
+            <div className="text-xs text-slate-500">{user.email}</div>
           </div>
-          <Link href="/" className="admin-nav-link w-full">Lihat beranda</Link>
-          <button onClick={logout} className="admin-nav-link w-full text-left text-red-200 hover:!bg-red-500/10">
+          <Link href="/" className="admin-nav-link w-full mb-1">
+            Lihat beranda
+          </Link>
+          <button type="button" onClick={logout} className="admin-logout-btn">
             Keluar
           </button>
         </div>
       </aside>
 
-      <div className="fixed inset-x-0 top-0 z-30 flex items-center justify-between border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur md:hidden">
+      <div className="fixed inset-x-0 top-0 z-30 flex items-center justify-between border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur md:hidden">
         <button onClick={() => setSidebarOpen(true)} className="btn btn-secondary !px-3 !py-2">Menu</button>
         <div className="font-bold text-slate-800">Admin</div>
-        <button onClick={logout} className="text-sm text-red-500">Keluar</button>
+        <button onClick={logout} className="rounded-lg bg-red-600 px-3 py-1.5 text-sm font-semibold text-white">
+          Keluar
+        </button>
       </div>
 
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div className="absolute inset-0 bg-slate-900/40" onClick={() => setSidebarOpen(false)} />
-          <div className="absolute bottom-0 left-0 top-0 w-72 overflow-y-auto bg-slate-900 p-4 text-white">
-            <div className="mb-6 font-bold">Navigasi Admin</div>
-            <Nav onClick={() => setSidebarOpen(false)} />
+          <div className="absolute bottom-0 left-0 top-0 flex w-72 flex-col overflow-y-auto border-r border-slate-200 bg-white p-4 text-slate-900">
+            <div className="mb-6 font-bold text-slate-900">Navigasi Admin</div>
+            <div className="flex-1">
+              <Nav onClick={() => setSidebarOpen(false)} />
+            </div>
+            <button type="button" onClick={logout} className="admin-logout-btn mt-4">
+              Keluar
+            </button>
           </div>
         </div>
       )}

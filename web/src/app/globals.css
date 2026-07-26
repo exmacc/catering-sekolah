@@ -221,18 +221,20 @@ button, input, select, textarea { font: inherit; }
   min-height: 100vh;
   display: grid;
   grid-template-columns: 260px 1fr;
-  background: #faf8ff;
+  background: #f8fafc;
 }
 
 .admin-side {
   position: sticky;
   top: 0;
   height: 100vh;
-  background: linear-gradient(180deg, #2e1065 0%, #4c1d95 55%, #5b21b6 100%);
-  color: white;
+  background: #ffffff;
+  color: #0f172a;
   padding: 1.25rem 1rem;
   display: flex;
   flex-direction: column;
+  border-right: 1px solid #e2e8f0;
+  box-shadow: 1px 0 0 rgb(15 23 42 / 0.02);
 }
 
 .admin-main {
@@ -246,20 +248,51 @@ button, input, select, textarea { font: inherit; }
   gap: 0.75rem;
   padding: 0.8rem 0.95rem;
   border-radius: 0.9rem;
-  color: rgb(255 255 255 / 0.78);
+  color: #475569;
   transition: 0.15s ease;
   font-weight: 500;
+  border: 1px solid transparent;
+  background: transparent;
 }
 
 .admin-nav-link:hover {
-  background: rgb(255 255 255 / 0.08);
-  color: white;
+  background: #f8fafc;
+  color: #0f172a;
 }
 
 .admin-nav-link.active {
-  background: rgb(255 255 255 / 0.14);
-  color: white;
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+  color: #5b21b6;
+  font-weight: 600;
+  border-color: #e2e8f0;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.95),
+    inset 0 -1px 0 rgb(15 23 42 / 0.04),
+    0 1px 2px rgb(15 23 42 / 0.04),
+    0 4px 10px rgb(15 23 42 / 0.05);
+}
+
+.admin-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.7rem 0.95rem;
+  border-radius: 0.9rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #fff;
+  background: #dc2626;
+  border: 1px solid #b91c1c;
+  cursor: pointer;
+  transition: 0.15s ease;
+  box-shadow: 0 4px 12px rgb(220 38 38 / 0.2);
+}
+
+.admin-logout-btn:hover {
+  background: #b91c1c;
+  filter: brightness(1.02);
 }
 
 .table-wrap {
