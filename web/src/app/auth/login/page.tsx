@@ -38,7 +38,7 @@ function LoginForm() {
           <div className="mx-auto mb-3 flex justify-center">
             <BrandLogo size={48} />
           </div>
-          <div className="mb-1 text-sm font-semibold text-violet-700">{branding.business_name}</div>
+          <div className="mb-1 text-sm font-semibold text-blue-700">{branding.business_name}</div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Masuk akun</h1>
           <p className="mt-1 text-sm text-slate-500">
             {next.startsWith('/order/')
@@ -67,7 +67,7 @@ function LoginForm() {
 
         <p className="mt-5 text-center text-sm text-slate-500">
           Belum punya akun?{' '}
-          <Link href={`/auth/register?next=${encodeURIComponent(next)}`} className="font-semibold text-violet-700 hover:underline">
+          <Link href={`/auth/register?next=${encodeURIComponent(next)}`} className="font-semibold text-blue-700 hover:underline">
             Daftar
           </Link>
         </p>

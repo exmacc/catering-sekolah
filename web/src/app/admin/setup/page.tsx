@@ -125,7 +125,7 @@ export default function AdminSetupPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <p className="mb-1 text-sm font-medium text-violet-700">Pengaturan → Setup Database</p>
+        <p className="mb-1 text-sm font-medium text-blue-700">Pengaturan → Setup Database</p>
         <h1 className="page-title">Setup Database</h1>
         <p className="page-sub">
           Error <b>Could not find the table public.categories</b> artinya tabel belum dibuat di Supabase.
@@ -138,7 +138,7 @@ export default function AdminSetupPage() {
           <li>
             Buka{' '}
             <a
-              className="font-semibold text-violet-700 underline"
+              className="font-semibold text-blue-700 underline"
               href="https://supabase.com/dashboard/project/fevvypxymwmgscsirpfg/sql/new"
               target="_blank"
               rel="noreferrer"

@@ -55,7 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (loading || !user || user.role !== 'admin') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="h-10 w-10 rounded-full border-4 border-violet-100 border-t-violet-600 animate-spin" />
+        <div className="h-10 w-10 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin" />
       </div>
     );
   }
@@ -127,9 +127,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="text-sm font-semibold text-slate-800">{user.full_name}</div>
             <div className="text-xs text-slate-500">{user.email}</div>
           </div>
-          <Link href="/" className="admin-nav-link w-full mb-1">
-            Lihat beranda
-          </Link>
           <button type="button" onClick={logout} className="admin-logout-btn">
             Keluar
           </button>

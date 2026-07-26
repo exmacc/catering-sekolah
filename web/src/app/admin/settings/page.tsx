@@ -104,22 +104,22 @@ export default function AdminSettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <p className="mb-1 text-sm font-medium text-violet-700">Pengaturan → Nama & Logo</p>
+        <p className="mb-1 text-sm font-medium text-blue-700">Pengaturan → Nama & Logo</p>
         <h1 className="page-title">Nama & Logo</h1>
         <p className="page-sub">Ubah nama catering & logo — langsung tampil di web customer</p>
       </div>
 
       {error && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
-      {message && <div className="rounded-xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm text-violet-800">{message}</div>}
+      {message && <div className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-800">{message}</div>}
 
       <section className="card p-5">
         <h2 className="mb-3 font-bold text-slate-900">Preview (seperti di header customer)</h2>
-        <div className="flex items-center gap-3 rounded-2xl border border-violet-100 bg-white p-4">
+        <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-white p-4">
           {form.logo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={form.logo_url} alt="Logo" className="h-12 w-12 rounded-2xl object-cover" />
           ) : (
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-xl text-white">🍱</div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500 text-xl text-white">🍱</div>
           )}
           <div>
             <div className="font-extrabold text-slate-900">{form.business_name || 'Nama catering'}</div>
@@ -172,7 +172,7 @@ export default function AdminSettingsPage() {
       </form>
 
       <section className="card border-amber-100 bg-amber-50/50 p-5 text-sm text-amber-950">
-        <b>Jika error tabel belum ada:</b> buka <a href="/admin/setup" className="font-semibold text-violet-700 underline">Setup DB</a>,
+        <b>Jika error tabel belum ada:</b> buka <a href="/admin/setup" className="font-semibold text-blue-700 underline">Setup DB</a>,
         salin & jalankan SQL terbaru (termasuk tabel <code>app_settings</code>), lalu simpan lagi di sini.
       </section>
     </div>

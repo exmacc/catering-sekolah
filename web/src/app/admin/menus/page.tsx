@@ -100,7 +100,7 @@ export default function AdminMenusPage() {
             </div>
           </div>
         </div>
-        <div className="mt-4 rounded-xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm text-violet-900">
+        <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-900">
           Contoh link: <code className="rounded bg-white px-1.5 py-0.5 text-xs">https://catering-sekolah.vercel.app/order/ID-MENU</code>
           <br />
           Customer yang sudah pernah daftar cukup login; data anak/kelas tidak perlu diisi ulang.
@@ -161,12 +161,12 @@ export default function AdminMenusPage() {
                 {menu.items?.map((item) => (
                   <div key={item.id} className="item-pill">
                     <div className="flex min-w-0 items-center gap-2">
-                      <div className="h-9 w-9 shrink-0 overflow-hidden rounded-lg bg-violet-50">
+                      <div className="h-9 w-9 shrink-0 overflow-hidden rounded-lg bg-blue-50">
                         {item.image_url ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={item.image_url} alt="" className="h-full w-full object-cover" />
                         ) : (
-                          <div className="flex h-full items-center justify-center text-xs text-violet-300">🍽️</div>
+                          <div className="flex h-full items-center justify-center text-xs text-blue-300">🍽️</div>
                         )}
                       </div>
                       <div className="min-w-0">
@@ -174,7 +174,7 @@ export default function AdminMenusPage() {
                         <div className="text-[11px] text-slate-500">{item.category === 'food' ? 'Makanan' : 'Minuman'}</div>
                       </div>
                     </div>
-                    <div className="text-sm font-bold text-violet-700">{formatRupiah(item.price)}</div>
+                    <div className="text-sm font-bold text-blue-700">{formatRupiah(item.price)}</div>
                   </div>
                 ))}
               </div>

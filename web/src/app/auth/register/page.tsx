@@ -50,7 +50,7 @@ function RegisterForm() {
           <div className="mx-auto mb-3 flex justify-center">
             <BrandLogo size={48} />
           </div>
-          <div className="mb-1 text-sm font-semibold text-violet-700">{branding.business_name}</div>
+          <div className="mb-1 text-sm font-semibold text-blue-700">{branding.business_name}</div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Daftar akun</h1>
           <p className="mt-1 text-sm text-slate-500">
             {next.startsWith('/order/')
@@ -72,7 +72,7 @@ function RegisterForm() {
                   onClick={() => setForm({ ...form, customer_type: type })}
                   className={`rounded-xl border px-3 py-3 text-sm font-semibold transition ${
                     form.customer_type === type
-                      ? 'border-violet-500 bg-violet-50 text-violet-800'
+                      ? 'border-blue-500 bg-blue-50 text-blue-800'
                       : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                   }`}
                 >
@@ -127,7 +127,7 @@ function RegisterForm() {
 
         <p className="mt-5 text-center text-sm text-slate-500">
           Sudah punya akun?{' '}
-          <Link href={`/auth/login?next=${encodeURIComponent(next)}`} className="font-semibold text-violet-700 hover:underline">
+          <Link href={`/auth/login?next=${encodeURIComponent(next)}`} className="font-semibold text-blue-700 hover:underline">
             Masuk
           </Link>
         </p>

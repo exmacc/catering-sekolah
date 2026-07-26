@@ -134,12 +134,12 @@ export default function AdminCatalogPage() {
         <div>
           <label className="label">Foto menu</label>
           <div className="flex flex-wrap items-start gap-4">
-            <div className="h-24 w-24 overflow-hidden rounded-2xl border border-violet-100 bg-violet-50">
+            <div className="h-24 w-24 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50">
               {form.image_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={form.image_url} alt="Preview" className="h-full w-full object-cover" />
               ) : (
-                <div className="flex h-full items-center justify-center text-2xl text-violet-300">🍽️</div>
+                <div className="flex h-full items-center justify-center text-2xl text-blue-300">🍽️</div>
               )}
             </div>
             <div className="space-y-2">
@@ -162,7 +162,7 @@ export default function AdminCatalogPage() {
         </div>
 
         <label className="flex items-center gap-2 text-sm text-slate-700">
-          <input type="checkbox" checked={form.is_available} onChange={(e) => setForm({ ...form, is_available: e.target.checked })} className="accent-violet-600" />
+          <input type="checkbox" checked={form.is_available} onChange={(e) => setForm({ ...form, is_available: e.target.checked })} className="accent-blue-600" />
           Tersedia untuk dipilih
         </label>
         <div className="flex gap-2">
@@ -199,12 +199,12 @@ export default function AdminCatalogPage() {
             {items.map((item) => (
               <tr key={item.id}>
                 <td>
-                  <div className="h-12 w-12 overflow-hidden rounded-xl bg-violet-50">
+                  <div className="h-12 w-12 overflow-hidden rounded-xl bg-blue-50">
                     {item.image_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-lg text-violet-300">🍽️</div>
+                      <div className="flex h-full items-center justify-center text-lg text-blue-300">🍽️</div>
                     )}
                   </div>
                 </td>
@@ -213,7 +213,7 @@ export default function AdminCatalogPage() {
                   {item.description && <div className="text-xs text-slate-500">{item.description}</div>}
                 </td>
                 <td>{item.category?.name || '-'}</td>
-                <td className="font-bold text-violet-700">{formatRupiah(item.price)}</td>
+                <td className="font-bold text-blue-700">{formatRupiah(item.price)}</td>
                 <td><Badge tone={item.is_available ? 'success' : 'gray'}>{item.is_available ? 'Tersedia' : 'Nonaktif'}</Badge></td>
                 <td>
                   <div className="flex gap-2">

@@ -144,7 +144,7 @@ export default function OrderPage() {
       <CustomerHeader />
 
       <main className="shell py-6">
-        <div className="mb-4 rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm text-violet-900">
+        <div className="mb-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-900">
           Anda membuka <b>link pesanan langsung</b> dari admin. Pilih item, lalu konfirmasi pesanan.
           {!user && ' Login/daftar sekali — data tersimpan untuk pesanan berikutnya.'}
         </div>
@@ -156,7 +156,7 @@ export default function OrderPage() {
         </div>
 
         {!user && (
-          <div className="card mb-5 flex flex-col gap-3 border-violet-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="card mb-5 flex flex-col gap-3 border-blue-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div className="font-bold text-slate-900">Login dulu untuk kirim pesanan</div>
               <div className="text-sm text-slate-500">Setelah masuk, Anda kembali ke halaman ini otomatis.</div>
@@ -177,17 +177,17 @@ export default function OrderPage() {
                 return (
                   <div
                     key={item.id}
-                    className={`rounded-2xl border p-4 transition ${selected ? 'border-violet-500 bg-violet-50/50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
+                    className={`rounded-2xl border p-4 transition ${selected ? 'border-blue-500 bg-blue-50/50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
                   >
                     <div className="flex cursor-pointer items-start justify-between gap-3" onClick={() => toggleItem(item.id)}>
                       <div className="flex items-start gap-3">
-                        <input type="checkbox" checked={selected} onChange={() => toggleItem(item.id)} className="mt-1 accent-violet-600" />
-                        <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-violet-50">
+                        <input type="checkbox" checked={selected} onChange={() => toggleItem(item.id)} className="mt-1 accent-blue-600" />
+                        <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-blue-50">
                           {item.image_url ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
                           ) : (
-                            <div className="flex h-full items-center justify-center text-xl text-violet-300">🍽️</div>
+                            <div className="flex h-full items-center justify-center text-xl text-blue-300">🍽️</div>
                           )}
                         </div>
                         <div>
@@ -199,7 +199,7 @@ export default function OrderPage() {
                           </div>
                         </div>
                       </div>
-                      <div className="font-bold text-violet-700">{formatRupiah(item.price)}</div>
+                      <div className="font-bold text-blue-700">{formatRupiah(item.price)}</div>
                     </div>
 
                     {selected && (
@@ -230,7 +230,7 @@ export default function OrderPage() {
                     key={opt.id}
                     type="button"
                     onClick={() => setPaymentMethod(opt.id)}
-                    className={`rounded-2xl border p-3 text-left transition ${paymentMethod === opt.id ? 'border-violet-500 bg-violet-50' : 'border-slate-200 hover:bg-slate-50'}`}
+                    className={`rounded-2xl border p-3 text-left transition ${paymentMethod === opt.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:bg-slate-50'}`}
                   >
                     <div className="font-semibold text-slate-900">{opt.label}</div>
                     <div className="text-xs text-slate-500">{opt.desc}</div>
@@ -247,8 +247,8 @@ export default function OrderPage() {
                   { id: 'weekly', label: 'Mingguan' },
                   { id: 'monthly', label: 'Bulanan' },
                 ] as const).map((opt) => (
-                  <label key={opt.id} className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 ${paymentPeriod === opt.id ? 'border-violet-500 bg-violet-50' : 'border-slate-200'}`}>
-                    <input type="radio" name="payment_period" checked={paymentPeriod === opt.id} onChange={() => setPaymentPeriod(opt.id)} className="accent-violet-600" />
+                  <label key={opt.id} className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 ${paymentPeriod === opt.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200'}`}>
+                    <input type="radio" name="payment_period" checked={paymentPeriod === opt.id} onChange={() => setPaymentPeriod(opt.id)} className="accent-blue-600" />
                     <span className="font-medium text-slate-800">{opt.label}</span>
                   </label>
                 ))}
@@ -266,10 +266,10 @@ export default function OrderPage() {
           )}
 
           <div className="sticky bottom-4 lg:col-span-2">
-            <div className="card flex flex-col gap-4 border-violet-100 bg-white/95 p-4 backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:p-5">
+            <div className="card flex flex-col gap-4 border-blue-100 bg-white/95 p-4 backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <div>
                 <div className="text-sm text-slate-500">Total pesanan ({Object.keys(cart).length} item)</div>
-                <div className="text-2xl font-extrabold text-violet-700">{formatRupiah(getTotal())}</div>
+                <div className="text-2xl font-extrabold text-blue-700">{formatRupiah(getTotal())}</div>
               </div>
               {user ? (
                 <button type="submit" disabled={submitting || Object.keys(cart).length === 0} className="btn btn-primary min-w-[180px]">

@@ -11,7 +11,7 @@ export function CustomerHeader() {
   const isAdmin = user?.role === 'admin';
 
   return (
-    <header className="sticky top-0 z-20 border-b border-violet-100/80 bg-white/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-20 border-b border-blue-100/80 bg-white/90 backdrop-blur-xl">
       <div className="shell flex items-center justify-between gap-3 py-3.5">
         <Link href="/" className="flex min-w-0 items-center gap-2.5">
           <BrandLogo size={40} />
@@ -34,7 +34,7 @@ export function CustomerHeader() {
                 </Link>
               )}
 
-              <div className="hidden items-center gap-2 rounded-full border border-violet-100 bg-white py-1 pl-3 pr-1 sm:flex">
+              <div className="hidden items-center gap-2 rounded-full border border-blue-100 bg-white py-1 pl-3 pr-1 sm:flex">
                 <div className="text-right leading-tight">
                   <div className="max-w-[120px] truncate text-sm font-semibold text-slate-800">{user.full_name}</div>
                   <div className="text-[11px] text-slate-500">{isAdmin ? 'Administrator' : 'Pelanggan'}</div>

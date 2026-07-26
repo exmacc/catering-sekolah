@@ -50,16 +50,16 @@ export default function CustomerMenusPage() {
                 {branding.tagline || 'Pilih makanan & minuman, tentukan metode bayar cash/transfer, serta periode harian, mingguan, atau bulanan.'}
               </p>
               <div className="mt-5 flex flex-wrap gap-2">
-                <span className="chip border border-violet-100 bg-violet-50 text-violet-700">Cash / Transfer</span>
-                <span className="chip border border-indigo-100 bg-indigo-50 text-indigo-700">Harian · Mingguan · Bulanan</span>
-                <span className="chip border border-purple-100 bg-purple-50 text-purple-700">Data tersimpan</span>
+                <span className="chip border border-blue-100 bg-blue-50 text-blue-700">Cash / Transfer</span>
+                <span className="chip border border-blue-100 bg-blue-50 text-blue-700">Harian · Mingguan · Bulanan</span>
+                <span className="chip border border-blue-100 bg-blue-50 text-blue-700">Data tersimpan</span>
               </div>
             </div>
-            <div className="flex flex-col justify-between bg-gradient-to-br from-violet-600 to-purple-700 p-6 text-white sm:p-8">
+            <div className="flex flex-col justify-between bg-blue-500 p-6 text-white sm:p-8">
               <div>
-                <div className="text-sm text-violet-100">Status akun</div>
+                <div className="text-sm text-blue-100">Status akun</div>
                 <div className="mt-1 text-xl font-bold">{user ? `Halo, ${user.full_name}` : 'Belum login'}</div>
-                <p className="mt-2 text-sm text-violet-50/90">
+                <p className="mt-2 text-sm text-blue-50/90">
                   {user
                     ? user.role === 'admin'
                       ? 'Kelola kategori, daftar menu, publish harian, dan keuangan lewat Panel Admin.'
@@ -68,11 +68,11 @@ export default function CustomerMenusPage() {
                 </p>
               </div>
               {!user ? (
-                <Link href="/auth/register" className="btn mt-6 bg-white text-violet-800 hover:bg-violet-50">
+                <Link href="/auth/register" className="btn mt-6 bg-white text-blue-700 hover:bg-blue-50">
                   Daftar sekarang
                 </Link>
               ) : user.role === 'admin' ? (
-                <Link href="/admin/menus" className="btn mt-6 bg-white text-violet-800 hover:bg-violet-50">
+                <Link href="/admin/menus" className="btn mt-6 bg-white text-blue-700 hover:bg-blue-50">
                   Kelola & publish menu
                 </Link>
               ) : null}
@@ -105,14 +105,14 @@ export default function CustomerMenusPage() {
                 <div className="food-card-top">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <div className="text-xs uppercase tracking-wide text-violet-50/90">Tanggal saji</div>
+                      <div className="text-xs uppercase tracking-wide text-blue-50/90">Tanggal saji</div>
                       <div className="font-semibold">{formatDateShort(menu.available_date)}</div>
                     </div>
                     <Badge tone="success" className="!border-white/20 !bg-white/15 !text-white">Aktif</Badge>
                   </div>
                   <div>
                     <h3 className="text-xl font-extrabold leading-tight">{menu.name}</h3>
-                    {menu.description && <p className="mt-1 line-clamp-2 text-sm text-violet-50/90">{menu.description}</p>}
+                    {menu.description && <p className="mt-1 line-clamp-2 text-sm text-blue-50/90">{menu.description}</p>}
                   </div>
                 </div>
 
@@ -120,12 +120,12 @@ export default function CustomerMenusPage() {
                   {(menu.items || []).filter((i) => i.is_available).slice(0, 4).map((item) => (
                     <div key={item.id} className="item-pill">
                       <div className="flex min-w-0 items-center gap-2.5">
-                        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-violet-50">
+                        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-blue-50">
                           {item.image_url ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
                           ) : (
-                            <div className="flex h-full items-center justify-center text-sm text-violet-300">🍽️</div>
+                            <div className="flex h-full items-center justify-center text-sm text-blue-300">🍽️</div>
                           )}
                         </div>
                         <div className="min-w-0">
@@ -133,7 +133,7 @@ export default function CustomerMenusPage() {
                           <div className="text-[11px] text-slate-500">{item.category === 'food' ? 'Makanan' : 'Minuman'}</div>
                         </div>
                       </div>
-                      <div className="whitespace-nowrap text-sm font-bold text-violet-700">{formatRupiah(item.price)}</div>
+                      <div className="whitespace-nowrap text-sm font-bold text-blue-700">{formatRupiah(item.price)}</div>
                     </div>
                   ))}
                   {(menu.items?.length || 0) > 4 && (

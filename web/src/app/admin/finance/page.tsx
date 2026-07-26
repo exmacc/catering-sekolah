@@ -86,19 +86,19 @@ export default function AdminFinancePage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="stat-card green">
           <div className="text-sm text-slate-500">Total pemasukan</div>
-          <div className="mt-2 text-2xl font-extrabold text-violet-700">{formatRupiah(summary?.income || 0)}</div>
+          <div className="mt-2 text-2xl font-extrabold text-blue-700">{formatRupiah(summary?.income || 0)}</div>
         </div>
         <div className="stat-card orange">
           <div className="text-sm text-slate-500">Total pengeluaran</div>
-          <div className="mt-2 text-2xl font-extrabold text-fuchsia-700">{formatRupiah(summary?.outcome || 0)}</div>
+          <div className="mt-2 text-2xl font-extrabold text-blue-700">{formatRupiah(summary?.outcome || 0)}</div>
         </div>
         <div className="stat-card blue">
           <div className="text-sm text-slate-500">Saldo</div>
-          <div className="mt-2 text-2xl font-extrabold text-indigo-700">{formatRupiah(summary?.balance || 0)}</div>
+          <div className="mt-2 text-2xl font-extrabold text-blue-700">{formatRupiah(summary?.balance || 0)}</div>
         </div>
         <div className="stat-card purple">
           <div className="text-sm text-slate-500">Cash / Transfer</div>
-          <div className="mt-2 text-sm font-bold text-purple-700">
+          <div className="mt-2 text-sm font-bold text-blue-700">
             {formatRupiah(summary?.cash_income || 0)} / {formatRupiah(summary?.transfer_income || 0)}
           </div>
         </div>
@@ -108,14 +108,14 @@ export default function AdminFinancePage() {
         <h2 className="mb-3 font-bold text-slate-900">Pemasukan per skema bayar</h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
           {(['daily', 'weekly', 'monthly'] as const).map((p) => (
-            <div key={p} className="rounded-2xl border border-violet-100 bg-violet-50/40 p-4">
+            <div key={p} className="rounded-2xl border border-blue-100 bg-blue-50/40 p-4">
               <div className="text-sm font-semibold text-slate-700">
                 {p === 'daily' ? 'Harian' : p === 'weekly' ? 'Mingguan' : 'Bulanan'}
               </div>
-              <div className="mt-2 text-lg font-extrabold text-violet-700">
+              <div className="mt-2 text-lg font-extrabold text-blue-700">
                 Masuk: {formatRupiah(summary?.by_period?.[p]?.income || 0)}
               </div>
-              <div className="text-sm text-fuchsia-700">
+              <div className="text-sm text-blue-700">
                 Keluar: {formatRupiah(summary?.by_period?.[p]?.outcome || 0)}
               </div>
             </div>
@@ -167,14 +167,14 @@ export default function AdminFinancePage() {
               <p className="text-sm text-slate-500">Belum ada pemasukan</p>
             ) : (
               payments.slice(0, 20).map((p) => (
-                <div key={p.id} className="flex items-center justify-between rounded-xl border border-violet-50 bg-violet-50/30 px-3 py-2">
+                <div key={p.id} className="flex items-center justify-between rounded-xl border border-blue-50 bg-blue-50/30 px-3 py-2">
                   <div>
                     <div className="text-sm font-semibold text-slate-800">{p.customer?.user?.full_name || 'Pelanggan'}</div>
                     <div className="text-xs text-slate-500">
                       {p.payment_method === 'cash' ? 'Cash' : 'Transfer'} · {p.payment_period === 'daily' ? 'Harian' : p.payment_period === 'weekly' ? 'Mingguan' : 'Bulanan'}
                     </div>
                   </div>
-                  <div className="font-bold text-violet-700">{formatRupiah(p.amount)}</div>
+                  <div className="font-bold text-blue-700">{formatRupiah(p.amount)}</div>
                 </div>
               ))
             )}
@@ -188,7 +188,7 @@ export default function AdminFinancePage() {
               <p className="text-sm text-slate-500">Belum ada pengeluaran</p>
             ) : (
               expenses.map((e) => (
-                <div key={e.id} className="flex items-center justify-between rounded-xl border border-fuchsia-50 bg-fuchsia-50/20 px-3 py-2">
+                <div key={e.id} className="flex items-center justify-between rounded-xl border border-blue-50 bg-blue-50/20 px-3 py-2">
                   <div>
                     <div className="text-sm font-semibold text-slate-800">{e.title}</div>
                     <div className="text-xs text-slate-500">
@@ -196,7 +196,7 @@ export default function AdminFinancePage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="font-bold text-fuchsia-700">{formatRupiah(e.amount)}</div>
+                    <div className="font-bold text-blue-700">{formatRupiah(e.amount)}</div>
                     <button onClick={() => removeExpense(e.id)} className="text-xs text-red-500 hover:underline">Hapus</button>
                   </div>
                 </div>

@@ -79,7 +79,7 @@ export default function OrderHistoryPage() {
                   </div>
                   <div className="text-left sm:text-right">
                     <div className="text-xs text-slate-500">Total</div>
-                    <div className="text-xl font-extrabold text-violet-700">{formatRupiah(order.total_amount)}</div>
+                    <div className="text-xl font-extrabold text-blue-700">{formatRupiah(order.total_amount)}</div>
                   </div>
                 </div>
 

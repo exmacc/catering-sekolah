@@ -21,7 +21,7 @@ export function BrandLogo({ size = 40, className = '' }: { size?: number; classN
 
   return (
     <div
-      className={`flex shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg shadow-violet-500/25 ${className}`}
+      className={`flex shrink-0 items-center justify-center rounded-2xl bg-blue-500 text-white shadow-lg shadow-blue-500/20 ${className}`}
       style={{ width: size, height: size, fontSize: size * 0.42 }}
     >
       🍱

@@ -152,14 +152,14 @@ export default function NewMenuPage() {
                   key={item.id}
                   type="button"
                   onClick={() => addFromCatalog(item)}
-                  className="flex items-center gap-3 rounded-xl border border-violet-100 bg-violet-50/40 px-3 py-3 text-left hover:bg-violet-50"
+                  className="flex items-center gap-3 rounded-xl border border-blue-100 bg-blue-50/40 px-3 py-3 text-left hover:bg-blue-50"
                 >
                   <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-white">
                     {item.image_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={item.image_url} alt="" className="h-full w-full object-cover" />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-lg text-violet-300">🍽️</div>
+                      <div className="flex h-full items-center justify-center text-lg text-blue-300">🍽️</div>
                     )}
                   </div>
                   <div className="min-w-0">
@@ -183,18 +183,18 @@ export default function NewMenuPage() {
           ) : (
             <div className="space-y-3">
               {items.map((item, index) => (
-                <div key={index} className="rounded-2xl border border-violet-100 p-4">
+                <div key={index} className="rounded-2xl border border-blue-100 p-4">
                   <div className="mb-3 flex justify-between">
                     <div className="text-sm font-semibold text-slate-700">Item #{index + 1}</div>
                     <button type="button" onClick={() => removeItem(index)} className="text-sm text-red-500">Hapus</button>
                   </div>
                   <div className="grid grid-cols-1 gap-3 md:grid-cols-[80px_1fr_1fr_1fr]">
-                    <div className="h-16 w-16 overflow-hidden rounded-xl bg-violet-50">
+                    <div className="h-16 w-16 overflow-hidden rounded-xl bg-blue-50">
                       {item.image_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={item.image_url} alt="" className="h-full w-full object-cover" />
                       ) : (
-                        <div className="flex h-full items-center justify-center text-xl text-violet-300">🍽️</div>
+                        <div className="flex h-full items-center justify-center text-xl text-blue-300">🍽️</div>
                       )}
                     </div>
                     <div>
@@ -220,8 +220,8 @@ export default function NewMenuPage() {
         </section>
 
         <section className="card p-5">
-          <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-violet-100 bg-violet-50/50 p-4">
-            <input type="checkbox" checked={form.publish_now} onChange={(e) => setForm({ ...form, publish_now: e.target.checked })} className="mt-1 accent-violet-600" />
+          <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50/50 p-4">
+            <input type="checkbox" checked={form.publish_now} onChange={(e) => setForm({ ...form, publish_now: e.target.checked })} className="mt-1 accent-blue-600" />
             <div>
               <div className="font-semibold text-slate-800">Publish sekarang</div>
               <div className="text-sm text-slate-500">Langsung tampil di beranda customer</div>

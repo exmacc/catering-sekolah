@@ -37,9 +37,14 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="page-title">Dashboard</h1>
-        <p className="page-sub">Ringkasan operasional catering hari ini</p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="page-title">Dashboard</h1>
+          <p className="page-sub">Ringkasan operasional catering hari ini</p>
+        </div>
+        <Link href="/" className="btn btn-secondary shrink-0 self-start sm:self-auto">
+          Lihat beranda
+        </Link>
       </div>
 
       <section className="card p-5">
@@ -80,21 +85,21 @@ export default function AdminDashboard() {
       </section>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="stat-card green">
+        <div className="stat-card blue">
           <div className="text-sm text-slate-500">Pendapatan hari ini</div>
-          <div className="mt-2 text-2xl font-extrabold text-violet-700">{formatRupiah(summary?.today_revenue || 0)}</div>
+          <div className="mt-2 text-2xl font-extrabold text-blue-600">{formatRupiah(summary?.today_revenue || 0)}</div>
         </div>
         <div className="stat-card blue">
           <div className="text-sm text-slate-500">Pesanan hari ini</div>
-          <div className="mt-2 text-2xl font-extrabold text-indigo-700">{summary?.today_orders || 0}</div>
+          <div className="mt-2 text-2xl font-extrabold text-blue-600">{summary?.today_orders || 0}</div>
         </div>
-        <div className="stat-card purple">
+        <div className="stat-card blue">
           <div className="text-sm text-slate-500">Total pelanggan</div>
-          <div className="mt-2 text-2xl font-extrabold text-purple-700">{summary?.total_customers || 0}</div>
+          <div className="mt-2 text-2xl font-extrabold text-blue-600">{summary?.total_customers || 0}</div>
         </div>
-        <div className="stat-card orange">
+        <div className="stat-card blue">
           <div className="text-sm text-slate-500">Total pendapatan</div>
-          <div className="mt-2 text-2xl font-extrabold text-fuchsia-700">{formatRupiah(summary?.total_revenue || 0)}</div>
+          <div className="mt-2 text-2xl font-extrabold text-blue-600">{formatRupiah(summary?.total_revenue || 0)}</div>
         </div>
       </div>
 
@@ -102,19 +107,19 @@ export default function AdminDashboard() {
         <section className="card p-5">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-bold text-slate-900">Pesanan terbaru</h2>
-            <Link href="/admin/orders" className="text-sm font-semibold text-violet-700 hover:underline">Lihat semua</Link>
+            <Link href="/admin/orders" className="text-sm font-semibold text-blue-600 hover:underline">Lihat semua</Link>
           </div>
           <div className="space-y-3">
             {recentOrders.length === 0 ? (
               <p className="text-sm text-slate-500">Belum ada pesanan</p>
             ) : (
               recentOrders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between rounded-2xl border border-violet-100 bg-violet-50/40 px-4 py-3">
+                <div key={order.id} className="flex items-center justify-between rounded-2xl border border-blue-50 bg-blue-50/40 px-4 py-3">
                   <div>
                     <div className="font-semibold text-slate-800">{order.customer?.user?.full_name || 'Pelanggan'}</div>
                     <div className="text-xs text-slate-500">{order.delivery_date}</div>
                   </div>
-                  <div className="font-bold text-violet-700">{formatRupiah(order.total_amount)}</div>
+                  <div className="font-bold text-blue-600">{formatRupiah(order.total_amount)}</div>
                 </div>
               ))
             )}
@@ -125,14 +130,18 @@ export default function AdminDashboard() {
           <h2 className="mb-4 font-bold text-slate-900">Aksi cepat</h2>
           <div className="grid grid-cols-2 gap-3">
             {[
-              { href: '/admin/menus/new', title: 'Buat menu', desc: 'Siapkan menu H-1', tone: 'from-violet-500 to-purple-600' },
-              { href: '/admin/menus', title: 'Publish menu', desc: 'Aktifkan & salin link', tone: 'from-indigo-500 to-violet-600' },
-              { href: '/admin/payments', title: 'Pembayaran', desc: 'Konfirmasi cash', tone: 'from-purple-500 to-fuchsia-600' },
-              { href: '/admin/reports', title: 'Laporan', desc: 'Pantau keuangan', tone: 'from-fuchsia-500 to-pink-500' },
+              { href: '/admin/menus/new', title: 'Buat menu', desc: 'Siapkan menu H-1' },
+              { href: '/admin/menus', title: 'Publish menu', desc: 'Aktifkan & salin link' },
+              { href: '/admin/payments', title: 'Pembayaran', desc: 'Konfirmasi cash' },
+              { href: '/admin/reports', title: 'Laporan', desc: 'Pantau keuangan' },
             ].map((item) => (
-              <Link key={item.href} href={item.href} className={`rounded-2xl bg-gradient-to-br ${item.tone} p-4 text-white shadow-lg`}>
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-2xl bg-blue-500 p-4 text-white shadow-md shadow-blue-500/20 transition hover:bg-blue-600"
+              >
                 <div className="font-bold">{item.title}</div>
-                <div className="mt-1 text-xs text-white/80">{item.desc}</div>
+                <div className="mt-1 text-xs text-blue-50">{item.desc}</div>
               </Link>
             ))}
           </div>
