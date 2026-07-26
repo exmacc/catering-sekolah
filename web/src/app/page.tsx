@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useBranding } from '@/contexts/BrandingContext';
 import { Menu } from '@/types';
 import { formatRupiah, formatDateShort } from '@/lib/utils';
 import { CustomerHeader } from '@/components/customer/CustomerHeader';
@@ -12,6 +13,7 @@ import { Badge } from '@/components/ui/Badge';
 
 export default function CustomerMenusPage() {
   const { user } = useAuth();
+  const { branding } = useBranding();
   const [menus, setMenus] = useState<Menu[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -42,10 +44,10 @@ export default function CustomerMenusPage() {
             <div className="p-6 sm:p-8">
               <Badge tone="success">Menu harian siap dipesan</Badge>
               <h1 className="page-title mt-3 text-slate-900">
-                Pesan catering sekolah<br className="hidden sm:block" /> lebih cepat & rapi
+                Pesan di {branding.business_name}<br className="hidden sm:block" /> lebih cepat & rapi
               </h1>
               <p className="page-sub max-w-xl">
-                Pilih makanan & minuman, tentukan metode bayar cash/transfer, serta periode harian, mingguan, atau bulanan.
+                {branding.tagline || 'Pilih makanan & minuman, tentukan metode bayar cash/transfer, serta periode harian, mingguan, atau bulanan.'}
               </p>
               <div className="mt-5 flex flex-wrap gap-2">
                 <span className="chip border border-violet-100 bg-violet-50 text-violet-700">Cash / Transfer</span>

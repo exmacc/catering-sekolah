@@ -4,9 +4,12 @@ import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useBranding } from '@/contexts/BrandingContext';
+import { BrandLogo } from '@/components/BrandLogo';
 
 function RegisterForm() {
   const { register } = useAuth();
+  const { branding } = useBranding();
   const searchParams = useSearchParams();
   const router = useRouter();
   const next = searchParams.get('next') || '/';
@@ -44,7 +47,10 @@ function RegisterForm() {
     <div className="auth-wrap py-8">
       <div className="auth-card" style={{ width: 'min(520px, 100%)' }}>
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-xl text-white shadow-lg shadow-violet-500/25">🍱</div>
+          <div className="mx-auto mb-3 flex justify-center">
+            <BrandLogo size={48} />
+          </div>
+          <div className="mb-1 text-sm font-semibold text-violet-700">{branding.business_name}</div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Daftar akun</h1>
           <p className="mt-1 text-sm text-slate-500">
             {next.startsWith('/order/')

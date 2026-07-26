@@ -69,6 +69,26 @@ VALUES
   ('Makanan', 'Menu makanan utama', 1),
   ('Minuman', 'Menu minuman', 2)
 ON CONFLICT (name) DO NOTHING;
+
+-- Branding (nama + logo)
+CREATE TABLE IF NOT EXISTS app_settings (
+  id TEXT PRIMARY KEY DEFAULT 'main',
+  business_name TEXT NOT NULL DEFAULT 'Catering Sekolah',
+  tagline TEXT DEFAULT 'Pesan mudah • Bayar fleksibel',
+  logo_url TEXT,
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  updated_by UUID REFERENCES users(id)
+);
+
+INSERT INTO app_settings (id, business_name, tagline)
+VALUES ('main', 'Catering Sekolah', 'Pesan mudah • Bayar fleksibel')
+ON CONFLICT (id) DO NOTHING;
+
+ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "public_read_settings" ON app_settings;
+DROP POLICY IF EXISTS "service_settings" ON app_settings;
+CREATE POLICY "public_read_settings" ON app_settings FOR SELECT USING (true);
+CREATE POLICY "service_settings" ON app_settings FOR ALL USING (true) WITH CHECK (true);
 `;
 
 export default function AdminSetupPage() {
@@ -83,16 +103,18 @@ export default function AdminSetupPage() {
 
   async function checkTables() {
     setCheckResult('Mengecek...');
-    const [c, i, e] = await Promise.all([
+    const [c, i, e, s] = await Promise.all([
       fetch('/api/categories').then((r) => r.json()),
       fetch('/api/catalog').then((r) => r.json()),
       fetch('/api/expenses').then((r) => r.json()),
+      fetch('/api/settings').then((r) => r.json()),
     ]);
-    if (c.success && i.success && e.success) {
-      setCheckResult('✅ Semua tabel siap! Buka Kategori / Daftar Menu / Keuangan.');
+    const settingsOk = s.success && !s.warning;
+    if (c.success && i.success && e.success && settingsOk) {
+      setCheckResult('✅ Semua tabel siap! (Kategori, Catalog, Keuangan, Nama & Logo)');
     } else {
       setCheckResult(
-        `❌ Belum siap.\nKategori: ${c.error || 'OK'}\nCatalog: ${i.error || 'OK'}\nExpenses: ${e.error || 'OK'}\n\nJalankan SQL di Supabase dulu.`
+        `❌ Belum siap.\nKategori: ${c.error || 'OK'}\nCatalog: ${i.error || 'OK'}\nExpenses: ${e.error || 'OK'}\nSettings: ${s.warning || s.error || 'OK'}\n\nJalankan SQL di Supabase dulu (klik Salin SQL).`
       );
     }
   }

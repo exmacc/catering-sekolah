@@ -2,21 +2,22 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useBranding } from '@/contexts/BrandingContext';
+import { BrandLogo } from '@/components/BrandLogo';
 
 export function CustomerHeader() {
   const { user, logout } = useAuth();
+  const { branding } = useBranding();
   const isAdmin = user?.role === 'admin';
 
   return (
     <header className="sticky top-0 z-20 border-b border-violet-100/80 bg-white/90 backdrop-blur-xl">
       <div className="shell flex items-center justify-between gap-3 py-3.5">
         <Link href="/" className="flex min-w-0 items-center gap-2.5">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-lg text-white shadow-lg shadow-violet-500/25">
-            🍱
-          </div>
+          <BrandLogo size={40} />
           <div className="min-w-0">
-            <div className="truncate font-extrabold tracking-tight text-slate-900">Catering Sekolah</div>
-            <div className="hidden text-[11px] text-slate-500 sm:block">Pesan mudah • Bayar fleksibel</div>
+            <div className="truncate font-extrabold tracking-tight text-slate-900">{branding.business_name}</div>
+            <div className="hidden truncate text-[11px] text-slate-500 sm:block">{branding.tagline}</div>
           </div>
         </Link>
 

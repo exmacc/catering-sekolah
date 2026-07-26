@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useBranding } from '@/contexts/BrandingContext';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Icon } from '@/components/admin/AdminIcons';
+import { BrandLogo } from '@/components/BrandLogo';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: 'dashboard' },
+  { href: '/admin/settings', label: 'Nama & Logo', icon: 'menu' },
   { href: '/admin/setup', label: '⚠️ Setup DB', icon: 'menu' },
   { href: '/admin/categories', label: 'Kategori', icon: 'menu' },
   { href: '/admin/catalog', label: 'Daftar Menu', icon: 'menu' },
@@ -21,6 +24,7 @@ const navItems = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth();
+  const { branding } = useBranding();
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -58,10 +62,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="admin-side">
         <div className="mb-6 px-2">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-lg">🍱</div>
-            <div>
+            <BrandLogo size={44} className="!rounded-2xl ring-2 ring-white/20" />
+            <div className="min-w-0">
               <div className="font-extrabold tracking-tight">Panel Admin</div>
-              <div className="text-xs text-white/60">Catering Sekolah</div>
+              <div className="truncate text-xs text-white/60">{branding.business_name}</div>
             </div>
           </div>
         </div>
