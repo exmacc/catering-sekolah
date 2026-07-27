@@ -5,6 +5,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useBranding } from '@/contexts/BrandingContext';
 import { BrandLogo } from '@/components/BrandLogo';
 
+const navBtn =
+  'inline-flex h-9 min-w-[4.25rem] items-center justify-center rounded-xl border px-3 text-xs font-semibold leading-none transition sm:h-10 sm:min-w-[5rem] sm:px-3.5 sm:text-sm';
+
 export function CustomerHeader() {
   const { user, logout } = useAuth();
   const { branding } = useBranding();
@@ -27,16 +30,25 @@ export function CustomerHeader() {
           {user ? (
             <>
               {(user as any).customer?.customer_type === 'parent' && (
-                <Link href="/children" className="btn btn-secondary !px-2.5 !py-1.5 text-xs sm:!px-3 sm:!py-2 sm:text-sm">
+                <Link
+                  href="/children"
+                  className={`${navBtn} border-slate-200 bg-white text-slate-700 hover:bg-slate-50`}
+                >
                   Anak
                 </Link>
               )}
-              <Link href="/order/history" className="btn btn-secondary !px-2.5 !py-1.5 text-xs sm:!px-3 sm:!py-2 sm:text-sm">
+              <Link
+                href="/order/history"
+                className={`${navBtn} border-slate-200 bg-white text-slate-700 hover:bg-slate-50`}
+              >
                 Riwayat
               </Link>
 
               {isAdmin && (
-                <Link href="/admin" className="btn btn-primary !px-2.5 !py-1.5 text-xs sm:!px-3 sm:!py-2 sm:text-sm">
+                <Link
+                  href="/admin"
+                  className={`${navBtn} border-blue-600 bg-blue-600 text-white hover:bg-blue-700`}
+                >
                   Admin
                 </Link>
               )}
@@ -44,17 +56,23 @@ export function CustomerHeader() {
               <button
                 type="button"
                 onClick={logout}
-                className="rounded-xl border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 sm:px-3 sm:py-2 sm:text-sm"
+                className={`${navBtn} border-red-200 bg-red-50 text-red-600 hover:bg-red-100`}
               >
                 Keluar
               </button>
             </>
           ) : (
             <>
-              <Link href="/auth/login" className="btn btn-secondary !px-2.5 !py-1.5 text-xs sm:!px-3 sm:!py-2 sm:text-sm">
+              <Link
+                href="/auth/login"
+                className={`${navBtn} border-slate-200 bg-white text-slate-700 hover:bg-slate-50`}
+              >
                 Masuk
               </Link>
-              <Link href="/auth/register" className="btn btn-primary !px-2.5 !py-1.5 text-xs sm:!px-3 sm:!py-2 sm:text-sm">
+              <Link
+                href="/auth/register"
+                className={`${navBtn} border-blue-600 bg-blue-600 text-white hover:bg-blue-700`}
+              >
                 Daftar
               </Link>
             </>
