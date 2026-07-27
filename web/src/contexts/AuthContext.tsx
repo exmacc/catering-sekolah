@@ -6,7 +6,7 @@ import { User } from '@/types';
 import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
-  user: (User & { customer?: { customer_type: string; child_name?: string; child_class?: string } }) | null;
+  user: (User & { customer?: { customer_type: string; child_name?: string; child_class?: string; notes?: string } }) | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   register: (data: any) => Promise<{ success: boolean; error?: string }>;

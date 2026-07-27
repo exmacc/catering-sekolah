@@ -26,6 +26,11 @@ export function CustomerHeader() {
         <nav className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           {user ? (
             <>
+              {(user as any).customer?.customer_type === 'parent' && (
+                <Link href="/children" className="btn btn-secondary !px-2.5 !py-1.5 text-xs sm:!px-3 sm:!py-2 sm:text-sm">
+                  Anak
+                </Link>
+              )}
               <Link href="/order/history" className="btn btn-secondary !px-2.5 !py-1.5 text-xs sm:!px-3 sm:!py-2 sm:text-sm">
                 Riwayat
               </Link>

@@ -6,7 +6,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const { id } = await params;
     const { data, error } = await supabaseAdmin
       .from('orders')
-      .select('*, items:order_items(*, menu_item:menu_items(*)), customer:customers(*, user:users(*))')
+      .select('*, items:order_items(*, menu_item:menu_items(*)), customer:customers(*, user:users(*)), child:children(*)')
       .eq('id', id)
       .single();
 

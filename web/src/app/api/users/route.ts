@@ -112,6 +112,15 @@ export async function POST(req: NextRequest) {
         await supabaseAdmin.auth.admin.deleteUser(userId);
         return NextResponse.json({ success: false, error: custError.message }, { status: 500 });
       }
+
+      if (customer_type === 'parent' && child_name && child_class) {
+        await supabaseAdmin.from('children').insert({
+          customer_id: userId,
+          name: child_name,
+          class_name: child_class,
+          is_active: true,
+        });
+      }
     }
 
     return NextResponse.json({

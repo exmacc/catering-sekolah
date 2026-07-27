@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 
     let query = supabaseAdmin
       .from('orders')
-      .select('*, items:order_items(*, menu_item:menu_items(*)), customer:customers(*, user:users(*))')
+      .select('*, items:order_items(*, menu_item:menu_items(*)), customer:customers(*, user:users(*)), child:children(*)')
       .order('created_at', { ascending: false });
 
     if (customerId) query = query.eq('customer_id', customerId);
@@ -30,14 +30,48 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { customer_id, menu_id, delivery_date, payment_method, payment_period, notes, items } = await req.json();
+    const body = await req.json();
+    const {
+      customer_id,
+      menu_id,
+      delivery_date,
+      payment_method,
+      payment_period,
+      notes,
+      items,
+      child_id,
+      child_ids,
+    } = body;
 
     if (!customer_id || !menu_id || !delivery_date || !payment_method || !payment_period || !items?.length) {
       return NextResponse.json({ success: false, error: 'Data pesanan tidak lengkap' }, { status: 400 });
     }
 
-    let totalAmount = 0;
-    const orderItems = [];
+    const { data: customer } = await supabaseAdmin
+      .from('customers')
+      .select('customer_type')
+      .eq('id', customer_id)
+      .maybeSingle();
+
+    // parent: must select at least one child
+    let targetChildIds: (string | null)[] = [null];
+    if (customer?.customer_type === 'parent') {
+      const ids: string[] = Array.isArray(child_ids)
+        ? child_ids.filter(Boolean)
+        : child_id
+          ? [child_id]
+          : [];
+      if (ids.length === 0) {
+        return NextResponse.json(
+          { success: false, error: 'Pilih minimal 1 anak untuk pesanan' },
+          { status: 400 }
+        );
+      }
+      targetChildIds = ids;
+    }
+
+    let unitTotal = 0;
+    const orderItemsTemplate: any[] = [];
 
     for (const item of items) {
       const { data: menuItem } = await supabaseAdmin
@@ -49,8 +83,8 @@ export async function POST(req: NextRequest) {
       if (!menuItem) continue;
 
       const subtotal = menuItem.price * item.quantity;
-      totalAmount += subtotal;
-      orderItems.push({
+      unitTotal += subtotal;
+      orderItemsTemplate.push({
         menu_item_id: item.menu_item_id,
         quantity: item.quantity,
         unit_price: menuItem.price,
@@ -58,42 +92,57 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const { data: order, error: orderError } = await supabaseAdmin
-      .from('orders')
-      .insert({
-        customer_id,
-        menu_id,
-        delivery_date,
-        payment_method,
-        payment_period,
-        notes,
-        total_amount: totalAmount,
-      })
-      .select()
-      .single();
-
-    if (orderError) throw orderError;
-
-    const itemsWithOrderId = orderItems.map((item) => ({ ...item, order_id: order.id }));
-    const { data: createdItems, error: itemsError } = await supabaseAdmin
-      .from('order_items')
-      .insert(itemsWithOrderId)
-      .select();
-
-    if (itemsError) throw itemsError;
-
-    if (payment_method === 'cash' && payment_period === 'daily') {
-      await supabaseAdmin.from('payments').insert({
-        customer_id,
-        order_id: order.id,
-        amount: totalAmount,
-        payment_method: 'cash',
-        payment_period: 'daily',
-        status: 'pending',
-      });
+    if (!orderItemsTemplate.length) {
+      return NextResponse.json({ success: false, error: 'Item pesanan tidak valid' }, { status: 400 });
     }
 
-    return NextResponse.json({ success: true, data: { ...order, items: createdItems } });
+    const createdOrders: any[] = [];
+
+    for (const cid of targetChildIds) {
+      const { data: order, error: orderError } = await supabaseAdmin
+        .from('orders')
+        .insert({
+          customer_id,
+          menu_id,
+          delivery_date,
+          payment_method,
+          payment_period,
+          notes,
+          total_amount: unitTotal,
+          child_id: cid,
+        })
+        .select('*, child:children(*)')
+        .single();
+
+      if (orderError) throw orderError;
+
+      const itemsWithOrderId = orderItemsTemplate.map((item) => ({ ...item, order_id: order.id }));
+      const { data: createdItems, error: itemsError } = await supabaseAdmin
+        .from('order_items')
+        .insert(itemsWithOrderId)
+        .select();
+
+      if (itemsError) throw itemsError;
+
+      if (payment_method === 'cash' && payment_period === 'daily') {
+        await supabaseAdmin.from('payments').insert({
+          customer_id,
+          order_id: order.id,
+          amount: unitTotal,
+          payment_method: 'cash',
+          payment_period: 'daily',
+          status: 'pending',
+        });
+      }
+
+      createdOrders.push({ ...order, items: createdItems });
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: createdOrders.length === 1 ? createdOrders[0] : createdOrders,
+      count: createdOrders.length,
+    });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

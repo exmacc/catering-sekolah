@@ -107,6 +107,32 @@ ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS billing_wa_template TEXT;
 ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payment_period TEXT;
 ALTER TABLE invoices ADD COLUMN IF NOT EXISTS wa_sent_at TIMESTAMPTZ;
 ALTER TABLE invoices ADD COLUMN IF NOT EXISTS wa_phone TEXT;
+
+-- Multi-anak
+CREATE TABLE IF NOT EXISTS children (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  customer_id UUID NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  class_name TEXT NOT NULL,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_children_customer ON children(customer_id);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS child_id UUID REFERENCES children(id) ON DELETE SET NULL;
+ALTER TABLE children ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "service_children" ON children;
+CREATE POLICY "service_children" ON children FOR ALL USING (true) WITH CHECK (true);
+INSERT INTO children (customer_id, name, class_name, is_active)
+SELECT c.id, c.child_name, c.child_class, true
+FROM customers c
+WHERE c.customer_type = 'parent'
+  AND c.child_name IS NOT NULL AND TRIM(c.child_name) <> ''
+  AND c.child_class IS NOT NULL AND TRIM(c.child_class) <> ''
+  AND NOT EXISTS (
+    SELECT 1 FROM children ch
+    WHERE ch.customer_id = c.id AND ch.name = c.child_name AND ch.class_name = c.child_class
+  );
 `;
 
 export default function AdminSetupPage() {

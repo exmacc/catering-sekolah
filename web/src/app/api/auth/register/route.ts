@@ -78,11 +78,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: userError.message }, { status: 500 });
     }
 
+    const childName = customer_type === 'parent' ? String(child_name).trim() : null;
+    const childClass = customer_type === 'parent' ? String(child_class).trim() : null;
+
     const { error: custError } = await supabaseAdmin.from('customers').insert({
       id: userId,
       customer_type,
-      child_name: customer_type === 'parent' ? String(child_name).trim() : null,
-      child_class: customer_type === 'parent' ? String(child_class).trim() : null,
+      child_name: childName,
+      child_class: childClass,
       notes: customer_type === 'teacher' ? notes || null : null,
     });
 
@@ -90,6 +93,16 @@ export async function POST(req: NextRequest) {
       await supabaseAdmin.from('users').delete().eq('id', userId);
       await supabaseAdmin.auth.admin.deleteUser(userId);
       return NextResponse.json({ success: false, error: custError.message }, { status: 500 });
+    }
+
+    // multi-anak: simpan anak pertama ke tabel children
+    if (customer_type === 'parent' && childName && childClass) {
+      await supabaseAdmin.from('children').insert({
+        customer_id: userId,
+        name: childName,
+        class_name: childClass,
+        is_active: true,
+      });
     }
 
     return NextResponse.json({ success: true, data: { id: userId, email: emailNorm } });

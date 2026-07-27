@@ -24,10 +24,32 @@ export default function OrderPage() {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [children, setChildren] = useState<any[]>([]);
+  const [selectedChildren, setSelectedChildren] = useState<Record<string, boolean>>({});
+
+  const isParent = user?.customer?.customer_type === 'parent';
 
   useEffect(() => {
     if (menuId) fetchMenu();
   }, [menuId]);
+
+  useEffect(() => {
+    if (user && isParent) loadChildren();
+  }, [user, isParent]);
+
+  async function loadChildren() {
+    if (!user) return;
+    const res = await fetch(`/api/children?customer_id=${user.id}`);
+    const result = await res.json();
+    if (result.success) {
+      const list = result.data || [];
+      setChildren(list);
+      // auto-select if only one child
+      if (list.length === 1) {
+        setSelectedChildren({ [list[0].id]: true });
+      }
+    }
+  }
 
   async function fetchMenu() {
     setLoading(true);
@@ -81,6 +103,16 @@ export default function OrderPage() {
       setMessage('Pilih minimal 1 item');
       return;
     }
+
+    const childIds = Object.entries(selectedChildren)
+      .filter(([, v]) => v)
+      .map(([id]) => id);
+
+    if (isParent && childIds.length === 0) {
+      setMessage('Pilih minimal 1 anak. Kelola data anak di menu Anak.');
+      return;
+    }
+
     setSubmitting(true);
     setMessage('');
 
@@ -94,6 +126,7 @@ export default function OrderPage() {
         payment_method: paymentMethod,
         payment_period: paymentPeriod,
         notes,
+        child_ids: isParent ? childIds : undefined,
         items: Object.entries(cart).map(([menu_item_id, quantity]) => ({ menu_item_id, quantity })),
       }),
     });
@@ -104,6 +137,13 @@ export default function OrderPage() {
     if (result.success) router.push('/order/history?success=1');
     else setMessage(result.error || 'Gagal memesan');
   }
+
+  function toggleChild(id: string) {
+    setSelectedChildren((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
+
+  const selectedChildCount = Object.values(selectedChildren).filter(Boolean).length;
+  const orderTotal = getTotal() * (isParent && selectedChildCount > 0 ? selectedChildCount : 1);
 
   if (loading || authLoading) {
     return (
@@ -220,6 +260,55 @@ export default function OrderPage() {
           </section>
 
           <aside className="space-y-4">
+            {isParent && (
+              <section className="card p-5">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <h3 className="font-bold text-slate-900">Pesan untuk anak</h3>
+                  <Link href="/children" className="text-xs font-semibold text-blue-600 hover:underline">
+                    Kelola anak
+                  </Link>
+                </div>
+                {children.length === 0 ? (
+                  <div className="rounded-xl border border-amber-100 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                    Belum ada data anak.{' '}
+                    <Link href="/children" className="font-semibold underline">
+                      Tambah anak dulu
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {children.map((child) => {
+                      const checked = !!selectedChildren[child.id];
+                      return (
+                        <label
+                          key={child.id}
+                          className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 ${
+                            checked ? 'border-blue-500 bg-blue-50' : 'border-slate-200'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleChild(child.id)}
+                            className="accent-blue-600"
+                          />
+                          <div>
+                            <div className="font-semibold text-slate-900">{child.name}</div>
+                            <div className="text-xs text-slate-500">Kelas {child.class_name}</div>
+                          </div>
+                        </label>
+                      );
+                    })}
+                    {selectedChildCount > 1 && (
+                      <p className="text-xs text-slate-500">
+                        Item yang sama akan dipesan untuk {selectedChildCount} anak (total digandakan).
+                      </p>
+                    )}
+                  </div>
+                )}
+              </section>
+            )}
+
             <section className="card p-5">
               <h3 className="mb-3 font-bold text-slate-900">Metode pembayaran</h3>
               <div className="grid grid-cols-2 gap-2">
@@ -240,7 +329,7 @@ export default function OrderPage() {
               </div>
               {paymentMethod === 'transfer' && (
                 <div className="mt-3">
-                  <BankTransferInfo amount={getTotal()} />
+                  <BankTransferInfo amount={orderTotal} />
                 </div>
               )}
             </section>
@@ -283,8 +372,11 @@ export default function OrderPage() {
           <div className="sticky bottom-4 lg:col-span-2">
             <div className="card flex flex-col gap-4 border-blue-100 bg-white/95 p-4 backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <div>
-                <div className="text-sm text-slate-500">Total pesanan ({Object.keys(cart).length} item)</div>
-                <div className="text-2xl font-extrabold text-blue-700">{formatRupiah(getTotal())}</div>
+                <div className="text-sm text-slate-500">
+                  Total ({Object.keys(cart).length} item
+                  {isParent && selectedChildCount > 0 ? ` × ${selectedChildCount} anak` : ''})
+                </div>
+                <div className="text-2xl font-extrabold text-blue-700">{formatRupiah(orderTotal)}</div>
               </div>
               {user ? (
                 <button type="submit" disabled={submitting || Object.keys(cart).length === 0} className="btn btn-primary min-w-[180px]">

@@ -77,6 +77,11 @@ export default function OrderHistoryPage() {
                       </Badge>
                     </div>
                     <div className="text-sm text-slate-500">Tanggal saji: {formatDateShort(order.delivery_date)}</div>
+                    {(order as any).child && (
+                      <div className="mt-1 text-sm font-medium text-blue-700">
+                        Untuk: {(order as any).child.name} · Kelas {(order as any).child.class_name}
+                      </div>
+                    )}
                   </div>
                   <div className="text-left sm:text-right">
                     <div className="text-xs text-slate-500">Total</div>

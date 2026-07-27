@@ -60,8 +60,8 @@ export default function AdminOrdersPage() {
       if (dateFilter && o.delivery_date !== dateFilter) return false;
       if (q) {
         const name = o.customer?.user?.full_name?.toLowerCase() || '';
-        const child = o.customer?.child_name?.toLowerCase() || '';
-        const cls = o.customer?.child_class?.toLowerCase() || '';
+        const child = (o.child?.name || o.customer?.child_name || '').toLowerCase();
+        const cls = (o.child?.class_name || o.customer?.child_class || '').toLowerCase();
         const items = (o.items || []).map((i: any) => i.menu_item?.name?.toLowerCase() || '').join(' ');
         const notes = (o.notes || '').toLowerCase();
         if (![name, child, cls, items, notes].some((s) => s.includes(q))) return false;
@@ -145,14 +145,17 @@ export default function AdminOrdersPage() {
                       </td>
                       <td>
                         <div className="font-semibold text-slate-800">{order.customer?.user?.full_name || 'Pelanggan'}</div>
-                        {order.customer?.customer_type === 'parent' && (
+                        {order.child ? (
+                          <div className="text-xs text-slate-500">
+                            Anak: {order.child.name} · {order.child.class_name}
+                          </div>
+                        ) : order.customer?.customer_type === 'parent' ? (
                           <div className="text-xs text-slate-500">
                             {order.customer?.child_name} · {order.customer?.child_class}
                           </div>
-                        )}
-                        {order.customer?.customer_type === 'teacher' && (
+                        ) : order.customer?.customer_type === 'teacher' ? (
                           <div className="text-xs text-slate-500">Guru</div>
-                        )}
+                        ) : null}
                       </td>
                       <td className="max-w-[220px]">
                         <div className="truncate text-sm text-slate-700" title={itemSummary}>
