@@ -16,13 +16,14 @@ export function CustomerHeader() {
   return (
     <header className="sticky top-0 z-20 border-b border-blue-100/80 bg-white/95 backdrop-blur-xl">
       <div className="shell flex items-center justify-between gap-2 py-3 sm:gap-3 sm:py-3.5">
-        <Link href="/" className="flex min-w-0 flex-1 items-center gap-2 sm:gap-2.5">
+        <Link href="/" className="flex shrink-0 items-center gap-2 sm:min-w-0 sm:flex-1 sm:gap-2.5" title={branding.business_name}>
           <BrandLogo size={36} className="sm:!h-10 sm:!w-10" />
-          <div className="min-w-0">
-            <div className="truncate text-sm font-extrabold tracking-tight text-slate-900 sm:text-base">
+          {/* Nama hanya di tablet/desktop — di HP diganti logo saja biar tombol nav muat */}
+          <div className="hidden min-w-0 sm:block">
+            <div className="truncate text-base font-extrabold tracking-tight text-slate-900">
               {branding.business_name}
             </div>
-            <div className="hidden truncate text-[11px] text-slate-500 sm:block">{branding.tagline}</div>
+            <div className="truncate text-[11px] text-slate-500">{branding.tagline}</div>
           </div>
         </Link>
 
