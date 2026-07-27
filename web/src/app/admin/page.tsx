@@ -139,10 +139,10 @@ export default function AdminDashboard() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-2xl bg-blue-500 p-4 text-white shadow-md shadow-blue-500/20 transition hover:bg-blue-600"
+                className="rounded-2xl border border-blue-100 bg-blue-50 p-4 transition hover:border-blue-200 hover:bg-blue-100"
               >
-                <div className="font-bold">{item.title}</div>
-                <div className="mt-1 text-xs text-blue-50">{item.desc}</div>
+                <div className="font-bold text-slate-900">{item.title}</div>
+                <div className="mt-1 text-xs text-slate-600">{item.desc}</div>
               </Link>
             ))}
           </div>

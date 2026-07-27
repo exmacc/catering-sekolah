@@ -68,14 +68,27 @@ export default function CustomerMenusPage() {
                 </p>
               </div>
               {!user ? (
-                <Link href="/auth/register" className="btn mt-6 bg-white text-blue-700 hover:bg-blue-50">
+                <Link
+                  href="/auth/register"
+                  className="mt-6 inline-flex items-center justify-center rounded-xl border-2 border-white bg-white px-4 py-2.5 text-sm font-bold text-blue-700 shadow-sm hover:bg-blue-50"
+                >
                   Daftar sekarang
                 </Link>
               ) : user.role === 'admin' ? (
-                <Link href="/admin/menus" className="btn mt-6 bg-white text-blue-700 hover:bg-blue-50">
+                <Link
+                  href="/admin/menus"
+                  className="mt-6 inline-flex items-center justify-center rounded-xl border-2 border-white bg-white px-4 py-2.5 text-sm font-bold text-blue-700 shadow-sm hover:bg-blue-50"
+                >
                   Kelola & publish menu
                 </Link>
-              ) : null}
+              ) : (
+                <Link
+                  href="/order/history"
+                  className="mt-6 inline-flex items-center justify-center rounded-xl border-2 border-white bg-white px-4 py-2.5 text-sm font-bold text-blue-700 shadow-sm hover:bg-blue-50"
+                >
+                  Lihat riwayat pesanan
+                </Link>
+              )}
             </div>
           </div>
         </div>

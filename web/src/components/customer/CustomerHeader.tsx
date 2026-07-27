@@ -34,24 +34,14 @@ export function CustomerHeader() {
                 </Link>
               )}
 
-              <div className="hidden items-center gap-2 rounded-full border border-blue-100 bg-white py-1 pl-3 pr-1 sm:flex">
-                <div className="text-right leading-tight">
-                  <div className="max-w-[120px] truncate text-sm font-semibold text-slate-800">{user.full_name}</div>
-                  <div className="text-[11px] text-slate-500">{isAdmin ? 'Administrator' : 'Pelanggan'}</div>
-                </div>
-                <button
-                  type="button"
-                  onClick={logout}
-                  className="rounded-full px-3 py-1.5 text-sm font-medium text-red-500 hover:bg-red-50"
-                >
-                  Keluar
-                </button>
+              <div className="hidden max-w-[140px] truncate text-right leading-tight sm:block">
+                <div className="truncate text-sm font-semibold text-slate-800">{user.full_name}</div>
+                <div className="text-[11px] text-slate-500">{isAdmin ? 'Administrator' : 'Pelanggan'}</div>
               </div>
-
               <button
                 type="button"
                 onClick={logout}
-                className="btn btn-ghost !px-2 !py-2 text-sm text-red-500 sm:hidden"
+                className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-100"
               >
                 Keluar
               </button>
