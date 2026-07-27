@@ -124,16 +124,16 @@ export default function AdminCategoriesPage() {
                 <td>
                   <Badge tone={item.is_active ? 'success' : 'gray'}>{item.is_active ? 'Aktif' : 'Nonaktif'}</Badge>
                 </td>
-                <td>
-                  <div className="flex flex-wrap gap-1.5">
-                    <ActionIcon icon="edit" label="Edit" onClick={() => openEdit(item)} />
+                <td className="whitespace-nowrap">
+                  <div className="inline-flex items-center gap-1.5">
+                    <ActionIcon icon="edit" label="Edit kategori" onClick={() => openEdit(item)} />
                     <ActionIcon
                       icon={item.is_active ? 'eyeOff' : 'eye'}
                       label={item.is_active ? 'Nonaktifkan' : 'Aktifkan'}
                       tone={item.is_active ? 'warning' : 'success'}
                       onClick={() => toggleActive(item)}
                     />
-                    <ActionIcon icon="trash" label="Hapus" tone="danger" onClick={() => remove(item.id)} />
+                    <ActionIcon icon="trash" label="Hapus kategori" tone="danger" onClick={() => remove(item.id)} />
                   </div>
                 </td>
               </tr>
