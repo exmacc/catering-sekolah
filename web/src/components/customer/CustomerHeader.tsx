@@ -5,7 +5,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useBranding } from '@/contexts/BrandingContext';
 import { BrandLogo } from '@/components/BrandLogo';
 
-function NavIcon({ name }: { name: 'child' | 'history' | 'logout' | 'admin' | 'login' | 'register' }) {
+function NavIcon({
+  name,
+  className = '',
+}: {
+  name: 'child' | 'history' | 'logout' | 'admin' | 'login' | 'register';
+  className?: string;
+}) {
   const paths: Record<string, React.ReactNode> = {
     child: (
       <path
@@ -48,7 +54,13 @@ function NavIcon({ name }: { name: 'child' | 'history' | 'logout' | 'admin' | 'l
   };
 
   return (
-    <svg className="h-4 w-4 sm:h-[18px] sm:w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.9}>
+    <svg
+      className={`h-4 w-4 sm:h-[18px] sm:w-[18px] ${className}`}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.9}
+    >
       {paths[name]}
     </svg>
   );
@@ -106,10 +118,10 @@ export function CustomerHeader() {
                   href="/admin"
                   title="Admin"
                   aria-label="Admin"
-                  className={`${navBtnBase} border-blue-600 bg-blue-600 text-white hover:bg-blue-700`}
+                  className={`${navBtnBase} !border-blue-600 !bg-blue-600 !text-white hover:!bg-blue-700`}
                 >
-                  <NavIcon name="admin" />
-                  <span className="hidden sm:inline">Admin</span>
+                  <NavIcon name="admin" className="!text-white" />
+                  <span className="hidden sm:inline !text-white">Admin</span>
                 </Link>
               )}
 
@@ -139,10 +151,11 @@ export function CustomerHeader() {
                 href="/auth/register"
                 title="Daftar"
                 aria-label="Daftar"
-                className={`${navBtnBase} border-blue-600 bg-blue-600 text-white hover:bg-blue-700`}
+                className={`${navBtnBase} !border-blue-600 !bg-blue-600 !text-white hover:!bg-blue-700 hover:!text-white`}
+                style={{ color: '#ffffff' }}
               >
-                <NavIcon name="register" />
-                <span className="hidden sm:inline">Daftar</span>
+                <NavIcon name="register" className="text-white" />
+                <span className="hidden text-white sm:inline">Daftar</span>
               </Link>
             </>
           )}
