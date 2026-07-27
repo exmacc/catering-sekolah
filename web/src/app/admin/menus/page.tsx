@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Loading } from '@/components/ui/Loading';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Modal } from '@/components/ui/Modal';
+import { ActionIcon } from '@/components/ui/ActionIcon';
 
 interface CatalogItem {
   id: string;
@@ -210,22 +211,38 @@ export default function AdminMenusPage() {
                     <div className="mt-2 break-all rounded-lg bg-slate-50 px-3 py-2 font-mono text-xs text-slate-600">/order/{menu.id}</div>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {menu.status === 'active' ? (
-                    <button onClick={() => setStatus(menu.id, 'closed')} disabled={busyId === menu.id} className="btn btn-secondary !px-3 !py-2 text-sm">
-                      {busyId === menu.id ? '...' : 'Tutup publish'}
-                    </button>
+                    <ActionIcon
+                      icon="eyeOff"
+                      label="Tutup publish"
+                      tone="warning"
+                      disabled={busyId === menu.id}
+                      onClick={() => setStatus(menu.id, 'closed')}
+                    />
                   ) : (
-                    <button onClick={() => setStatus(menu.id, 'active')} disabled={busyId === menu.id} className="btn btn-primary !px-3 !py-2 text-sm">
-                      {busyId === menu.id ? '...' : 'Publish'}
-                    </button>
+                    <ActionIcon
+                      icon="publish"
+                      label="Publish"
+                      tone="primary"
+                      disabled={busyId === menu.id}
+                      onClick={() => setStatus(menu.id, 'active')}
+                    />
                   )}
-                  <button onClick={() => copyCustomerLink(menu)} className="btn btn-secondary !px-3 !py-2 text-sm" disabled={menu.status !== 'active'}>
-                    {copiedId === menu.id ? 'Link disalin ✓' : 'Salin link'}
-                  </button>
-                  <button onClick={() => shareWhatsApp(menu)} className="btn btn-primary !px-3 !py-2 text-sm" disabled={menu.status !== 'active'}>
-                    Kirim WA
-                  </button>
+                  <ActionIcon
+                    icon={copiedId === menu.id ? 'check' : 'copy'}
+                    label={copiedId === menu.id ? 'Link disalin' : 'Salin link'}
+                    tone={copiedId === menu.id ? 'success' : 'default'}
+                    disabled={menu.status !== 'active'}
+                    onClick={() => copyCustomerLink(menu)}
+                  />
+                  <ActionIcon
+                    icon="whatsapp"
+                    label="Kirim WA"
+                    tone="primary"
+                    disabled={menu.status !== 'active'}
+                    onClick={() => shareWhatsApp(menu)}
+                  />
                 </div>
               </div>
 

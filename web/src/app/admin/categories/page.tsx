@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Loading } from '@/components/ui/Loading';
 import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
+import { ActionIcon } from '@/components/ui/ActionIcon';
 
 interface Category {
   id: string;
@@ -124,10 +125,15 @@ export default function AdminCategoriesPage() {
                   <Badge tone={item.is_active ? 'success' : 'gray'}>{item.is_active ? 'Aktif' : 'Nonaktif'}</Badge>
                 </td>
                 <td>
-                  <div className="flex flex-wrap gap-2">
-                    <button className="btn btn-secondary !px-3 !py-1.5 text-sm" onClick={() => openEdit(item)}>Edit</button>
-                    <button className="btn btn-secondary !px-3 !py-1.5 text-sm" onClick={() => toggleActive(item)}>{item.is_active ? 'Nonaktifkan' : 'Aktifkan'}</button>
-                    <button className="btn btn-danger !px-3 !py-1.5 text-sm" onClick={() => remove(item.id)}>Hapus</button>
+                  <div className="flex flex-wrap gap-1.5">
+                    <ActionIcon icon="edit" label="Edit" onClick={() => openEdit(item)} />
+                    <ActionIcon
+                      icon={item.is_active ? 'eyeOff' : 'eye'}
+                      label={item.is_active ? 'Nonaktifkan' : 'Aktifkan'}
+                      tone={item.is_active ? 'warning' : 'success'}
+                      onClick={() => toggleActive(item)}
+                    />
+                    <ActionIcon icon="trash" label="Hapus" tone="danger" onClick={() => remove(item.id)} />
                   </div>
                 </td>
               </tr>

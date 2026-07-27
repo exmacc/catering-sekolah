@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { formatRupiah, formatDateShort } from '@/lib/utils';
 import { Badge } from '@/components/ui/Badge';
 import { Loading } from '@/components/ui/Loading';
+import { ActionIcon } from '@/components/ui/ActionIcon';
 
 export default function AdminPaymentsPage() {
   const { user } = useAuth();
@@ -85,7 +86,7 @@ export default function AdminPaymentsPage() {
                   <td className="text-slate-500 text-sm">{payment.created_at ? formatDateShort(payment.created_at) : '-'}</td>
                   <td>
                     {payment.status === 'pending' && payment.payment_method === 'cash' && (
-                      <button onClick={() => confirmCash(payment.id)} className="btn btn-primary !py-1.5 !px-3 text-sm">Konfirmasi</button>
+                      <ActionIcon icon="check" label="Konfirmasi cash" tone="primary" onClick={() => confirmCash(payment.id)} />
                     )}
                   </td>
                 </tr>

@@ -6,6 +6,7 @@ import { fileToDataUrl } from '@/lib/image';
 import { Loading } from '@/components/ui/Loading';
 import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
+import { ActionIcon } from '@/components/ui/ActionIcon';
 
 interface Category { id: string; name: string }
 interface CatalogItem {
@@ -180,9 +181,9 @@ export default function AdminCatalogPage() {
                 <td className="font-bold text-blue-600">{formatRupiah(item.price)}</td>
                 <td><Badge tone={item.is_available ? 'success' : 'gray'}>{item.is_available ? 'Tersedia' : 'Nonaktif'}</Badge></td>
                 <td>
-                  <div className="flex gap-2">
-                    <button className="btn btn-secondary !px-3 !py-1.5 text-sm" onClick={() => openEdit(item)}>Edit</button>
-                    <button className="btn btn-danger !px-3 !py-1.5 text-sm" onClick={() => remove(item.id)}>Hapus</button>
+                  <div className="flex gap-1.5">
+                    <ActionIcon icon="edit" label="Edit" onClick={() => openEdit(item)} />
+                    <ActionIcon icon="trash" label="Hapus" tone="danger" onClick={() => remove(item.id)} />
                   </div>
                 </td>
               </tr>

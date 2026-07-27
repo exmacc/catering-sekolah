@@ -6,6 +6,7 @@ import { formatRupiah, formatDateShort } from '@/lib/utils';
 import { Loading } from '@/components/ui/Loading';
 import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
+import { ActionIcon } from '@/components/ui/ActionIcon';
 
 const emptyExpense = {
   title: '',
@@ -164,7 +165,7 @@ export default function AdminFinancePage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="font-bold text-blue-600">{formatRupiah(e.amount)}</div>
-                    <button onClick={() => removeExpense(e.id)} className="text-xs text-red-500 hover:underline">Hapus</button>
+                    <ActionIcon icon="trash" label="Hapus" tone="danger" onClick={() => removeExpense(e.id)} />
                   </div>
                 </div>
               ))

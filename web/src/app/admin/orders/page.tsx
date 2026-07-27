@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { formatRupiah, formatDateShort } from '@/lib/utils';
 import { Badge } from '@/components/ui/Badge';
 import { Loading } from '@/components/ui/Loading';
+import { ActionIcon } from '@/components/ui/ActionIcon';
 
 const statusLabel: Record<string, string> = {
   pending: 'Menunggu',
@@ -101,15 +102,15 @@ export default function AdminOrdersPage() {
                 ))}
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-1.5">
                 {order.status === 'pending' && (
                   <>
-                    <button onClick={() => updateStatus(order.id, 'confirmed')} className="btn btn-primary !py-2 !px-3 text-sm">Konfirmasi</button>
-                    <button onClick={() => updateStatus(order.id, 'cancelled')} className="btn btn-danger !py-2 !px-3 text-sm">Batalkan</button>
+                    <ActionIcon icon="check" label="Konfirmasi" tone="primary" onClick={() => updateStatus(order.id, 'confirmed')} />
+                    <ActionIcon icon="close" label="Batalkan" tone="danger" onClick={() => updateStatus(order.id, 'cancelled')} />
                   </>
                 )}
                 {order.status === 'confirmed' && (
-                  <button onClick={() => updateStatus(order.id, 'delivered')} className="btn btn-primary !py-2 !px-3 text-sm">Tandai selesai</button>
+                  <ActionIcon icon="done" label="Tandai selesai" tone="success" onClick={() => updateStatus(order.id, 'delivered')} />
                 )}
               </div>
             </article>
