@@ -256,8 +256,17 @@ export default function OrderPage() {
             </section>
 
             <section className="card p-5">
-              <h3 className="mb-3 font-bold text-slate-900">Catatan</h3>
-              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className="field" rows={3} placeholder="Contoh: tanpa cabe, antarkan ke kelas 5A..." />
+              <h3 className="mb-1 font-bold text-slate-900">Catatan pesanan</h3>
+              <p className="mb-3 text-xs text-slate-500">Opsional — contoh: tanpa daun bawang, tanpa cabe, antarkan ke kelas 5A</p>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="field"
+                rows={4}
+                maxLength={500}
+                placeholder="Tulis permintaan khusus di sini..."
+              />
+              <div className="mt-1 text-right text-[11px] text-slate-400">{notes.length}/500</div>
             </section>
           </aside>
 

@@ -102,6 +102,12 @@ export default function AdminOrdersPage() {
                 ))}
               </div>
 
+              {order.notes && (
+                <div className="mt-3 rounded-xl border border-amber-100 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                  <span className="font-semibold">Catatan customer:</span> {order.notes}
+                </div>
+              )}
+
               <div className="mt-4 flex flex-wrap gap-1.5">
                 {order.status === 'pending' && (
                   <>
