@@ -5,6 +5,7 @@ import { formatRupiah } from '@/lib/utils';
 import { fileToDataUrl } from '@/lib/image';
 import { Loading } from '@/components/ui/Loading';
 import { Badge } from '@/components/ui/Badge';
+import { Modal } from '@/components/ui/Modal';
 
 interface Category { id: string; name: string }
 interface CatalogItem {
@@ -34,7 +35,9 @@ export default function AdminCatalogPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [editing, setEditing] = useState<CatalogItem | null>(null);
+  const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
+  const [filterCat, setFilterCat] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { load(); }, []);
@@ -49,6 +52,27 @@ export default function AdminCatalogPage() {
       setError(catData.error || itemData.error || 'Gagal memuat data. Jalankan migration SQL dulu.');
     }
     setLoading(false);
+  }
+
+  function openCreate() {
+    setEditing(null);
+    setForm({ ...emptyForm, category_id: filterCat || '' });
+    setError('');
+    setOpen(true);
+  }
+
+  function openEdit(item: CatalogItem) {
+    setEditing(item);
+    setForm({
+      name: item.name,
+      description: item.description || '',
+      price: item.price,
+      category_id: item.category_id || '',
+      is_available: item.is_available,
+      image_url: item.image_url || null,
+    });
+    setError('');
+    setOpen(true);
   }
 
   async function onImageChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -81,9 +105,10 @@ export default function AdminCatalogPage() {
     const result = await res.json();
     setSaving(false);
     if (!result.success) {
-      setError(result.error || 'Gagal simpan. Jika kolom image_url belum ada, jalankan SQL di Pengaturan → Setup Database.');
+      setError(result.error || 'Gagal simpan');
       return;
     }
+    setOpen(false);
     setEditing(null);
     setForm(emptyForm);
     if (fileRef.current) fileRef.current.value = '';
@@ -96,92 +121,31 @@ export default function AdminCatalogPage() {
     load();
   }
 
+  const filtered = filterCat ? items.filter((i) => i.category_id === filterCat) : items;
+
   if (loading) return <Loading />;
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="page-title">Daftar Menu (Master)</h1>
-        <p className="page-sub">CRUD item + harga + foto. Dipilih saat buat Menu Harian.</p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="mb-1 text-sm font-medium text-blue-600">Menu Catering → Daftar Menu</p>
+          <h1 className="page-title">Daftar Menu</h1>
+          <p className="page-sub">Master item per kategori + harga + foto. Belum terkait hari publish.</p>
+        </div>
+        <button type="button" onClick={openCreate} className="btn btn-primary">+ Tambah menu</button>
       </div>
 
-      {error && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      <div className="flex flex-wrap gap-2">
+        <button type="button" onClick={() => setFilterCat('')} className={`btn !px-3 !py-1.5 text-sm ${!filterCat ? 'btn-primary' : 'btn-secondary'}`}>Semua</button>
+        {categories.map((c) => (
+          <button key={c.id} type="button" onClick={() => setFilterCat(c.id)} className={`btn !px-3 !py-1.5 text-sm ${filterCat === c.id ? 'btn-primary' : 'btn-secondary'}`}>
+            {c.name}
+          </button>
+        ))}
+      </div>
 
-      <form onSubmit={save} className="card space-y-4 p-5">
-        <h2 className="font-bold text-slate-900">{editing ? 'Edit item' : 'Tambah item menu'}</h2>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <div>
-            <label className="label">Nama</label>
-            <input className="field" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nasi Goreng" required />
-          </div>
-          <div>
-            <label className="label">Kategori</label>
-            <select className="field" value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })}>
-              <option value="">— pilih kategori —</option>
-              {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="label">Harga (Rp)</label>
-            <input type="number" className="field" value={form.price || ''} onChange={(e) => setForm({ ...form, price: parseInt(e.target.value) || 0 })} min={0} required />
-          </div>
-          <div>
-            <label className="label">Deskripsi</label>
-            <input className="field" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-          </div>
-        </div>
-
-        <div>
-          <label className="label">Foto menu</label>
-          <div className="flex flex-wrap items-start gap-4">
-            <div className="h-24 w-24 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50">
-              {form.image_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={form.image_url} alt="Preview" className="h-full w-full object-cover" />
-              ) : (
-                <div className="flex h-full items-center justify-center text-2xl text-blue-300">🍽️</div>
-              )}
-            </div>
-            <div className="space-y-2">
-              <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={onImageChange} className="text-sm" />
-              {form.image_url && (
-                <button
-                  type="button"
-                  className="btn btn-danger !px-3 !py-1.5 text-sm"
-                  onClick={() => {
-                    setForm((f) => ({ ...f, image_url: null }));
-                    if (fileRef.current) fileRef.current.value = '';
-                  }}
-                >
-                  Hapus foto
-                </button>
-              )}
-              <p className="text-xs text-slate-500">JPG/PNG/WebP. Otomatis dikompres (maks ~450KB).</p>
-            </div>
-          </div>
-        </div>
-
-        <label className="flex items-center gap-2 text-sm text-slate-700">
-          <input type="checkbox" checked={form.is_available} onChange={(e) => setForm({ ...form, is_available: e.target.checked })} className="accent-blue-600" />
-          Tersedia untuk dipilih
-        </label>
-        <div className="flex gap-2">
-          <button type="submit" disabled={saving} className="btn btn-primary">{saving ? 'Menyimpan...' : editing ? 'Update' : 'Tambah item'}</button>
-          {editing && (
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => {
-                setEditing(null);
-                setForm(emptyForm);
-                if (fileRef.current) fileRef.current.value = '';
-              }}
-            >
-              Batal
-            </button>
-          )}
-        </div>
-      </form>
+      {error && !open && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
       <div className="table-wrap">
         <table>
@@ -196,7 +160,7 @@ export default function AdminCatalogPage() {
             </tr>
           </thead>
           <tbody>
-            {items.map((item) => (
+            {filtered.map((item) => (
               <tr key={item.id}>
                 <td>
                   <div className="h-12 w-12 overflow-hidden rounded-xl bg-blue-50">
@@ -213,26 +177,11 @@ export default function AdminCatalogPage() {
                   {item.description && <div className="text-xs text-slate-500">{item.description}</div>}
                 </td>
                 <td>{item.category?.name || '-'}</td>
-                <td className="font-bold text-blue-700">{formatRupiah(item.price)}</td>
+                <td className="font-bold text-blue-600">{formatRupiah(item.price)}</td>
                 <td><Badge tone={item.is_available ? 'success' : 'gray'}>{item.is_available ? 'Tersedia' : 'Nonaktif'}</Badge></td>
                 <td>
                   <div className="flex gap-2">
-                    <button
-                      className="btn btn-secondary !px-3 !py-1.5 text-sm"
-                      onClick={() => {
-                        setEditing(item);
-                        setForm({
-                          name: item.name,
-                          description: item.description || '',
-                          price: item.price,
-                          category_id: item.category_id || '',
-                          is_available: item.is_available,
-                          image_url: item.image_url || null,
-                        });
-                      }}
-                    >
-                      Edit
-                    </button>
+                    <button className="btn btn-secondary !px-3 !py-1.5 text-sm" onClick={() => openEdit(item)}>Edit</button>
                     <button className="btn btn-danger !px-3 !py-1.5 text-sm" onClick={() => remove(item.id)}>Hapus</button>
                   </div>
                 </td>
@@ -240,8 +189,71 @@ export default function AdminCatalogPage() {
             ))}
           </tbody>
         </table>
-        {items.length === 0 && <div className="p-8 text-center text-slate-500">Belum ada item. Tambah kategori dulu, lalu isi daftar menu + foto.</div>}
+        {filtered.length === 0 && (
+          <div className="p-8 text-center text-slate-500">
+            Belum ada item. Buat kategori dulu, lalu klik + Tambah menu.
+          </div>
+        )}
       </div>
+
+      <Modal open={open} onClose={() => setOpen(false)} title={editing ? 'Edit menu' : 'Tambah menu'} wide>
+        <form onSubmit={save} className="space-y-4">
+          {error && <div className="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <label className="label">Nama</label>
+              <input className="field" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nasi Goreng" required />
+            </div>
+            <div>
+              <label className="label">Kategori</label>
+              <select className="field" value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })} required>
+                <option value="">— pilih kategori —</option>
+                {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="label">Harga (Rp)</label>
+              <input type="number" className="field" value={form.price || ''} onChange={(e) => setForm({ ...form, price: parseInt(e.target.value) || 0 })} min={0} required />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="label">Deskripsi</label>
+              <input className="field" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            </div>
+          </div>
+
+          <div>
+            <label className="label">Foto menu</label>
+            <div className="flex flex-wrap items-start gap-4">
+              <div className="h-24 w-24 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50">
+                {form.image_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={form.image_url} alt="Preview" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full items-center justify-center text-2xl text-blue-300">🍽️</div>
+                )}
+              </div>
+              <div className="space-y-2">
+                <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={onImageChange} className="text-sm" />
+                {form.image_url && (
+                  <button type="button" className="btn btn-danger !px-3 !py-1.5 text-sm" onClick={() => { setForm((f) => ({ ...f, image_url: null })); if (fileRef.current) fileRef.current.value = ''; }}>
+                    Hapus foto
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <label className="flex items-center gap-2 text-sm text-slate-700">
+            <input type="checkbox" checked={form.is_available} onChange={(e) => setForm({ ...form, is_available: e.target.checked })} className="accent-blue-600" />
+            Tersedia untuk dipilih saat publish harian
+          </label>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <button type="button" className="btn btn-secondary" onClick={() => setOpen(false)}>Batal</button>
+            <button type="submit" disabled={saving} className="btn btn-primary">{saving ? 'Menyimpan...' : editing ? 'Update' : 'Simpan'}</button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

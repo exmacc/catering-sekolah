@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Loading } from '@/components/ui/Loading';
 import { Badge } from '@/components/ui/Badge';
+import { Modal } from '@/components/ui/Modal';
 
 interface Category {
   id: string;
@@ -12,11 +13,14 @@ interface Category {
   is_active: boolean;
 }
 
+const emptyForm = { name: '', description: '', sort_order: 0 };
+
 export default function AdminCategoriesPage() {
   const [items, setItems] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ name: '', description: '', sort_order: 0 });
+  const [form, setForm] = useState(emptyForm);
   const [editing, setEditing] = useState<Category | null>(null);
+  const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -29,6 +33,20 @@ export default function AdminCategoriesPage() {
     if (result.success) setItems(result.data || []);
     else setError(result.error || 'Gagal memuat. Pastikan migration SQL sudah dijalankan.');
     setLoading(false);
+  }
+
+  function openCreate() {
+    setEditing(null);
+    setForm(emptyForm);
+    setError('');
+    setOpen(true);
+  }
+
+  function openEdit(item: Category) {
+    setEditing(item);
+    setForm({ name: item.name, description: item.description || '', sort_order: item.sort_order || 0 });
+    setError('');
+    setOpen(true);
   }
 
   async function save(e: React.FormEvent) {
@@ -49,8 +67,9 @@ export default function AdminCategoriesPage() {
       return;
     }
 
-    setForm({ name: '', description: '', sort_order: 0 });
+    setOpen(false);
     setEditing(null);
+    setForm(emptyForm);
     load();
   }
 
@@ -73,38 +92,16 @@ export default function AdminCategoriesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="page-title">Kategori</h1>
-        <p className="page-sub">CRUD kategori untuk mengelompokkan daftar menu (Makanan, Minuman, Snack, dll)</p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="mb-1 text-sm font-medium text-blue-600">Menu Catering → Kategori</p>
+          <h1 className="page-title">Kategori</h1>
+          <p className="page-sub">Kelompokkan menu (Makanan, Minuman, Snack, dll). Belum terkait hari.</p>
+        </div>
+        <button type="button" onClick={openCreate} className="btn btn-primary">+ Tambah kategori</button>
       </div>
 
-      {error && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
-
-      <form onSubmit={save} className="card space-y-4 p-5">
-        <h2 className="font-bold text-slate-900">{editing ? 'Edit kategori' : 'Tambah kategori'}</h2>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-          <div>
-            <label className="label">Nama kategori</label>
-            <input className="field" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Contoh: Snack" required />
-          </div>
-          <div>
-            <label className="label">Urutan</label>
-            <input type="number" className="field" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })} />
-          </div>
-          <div>
-            <label className="label">Deskripsi</label>
-            <input className="field" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Opsional" />
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <button type="submit" disabled={saving} className="btn btn-primary">{saving ? 'Menyimpan...' : editing ? 'Update' : 'Tambah'}</button>
-          {editing && (
-            <button type="button" className="btn btn-secondary" onClick={() => { setEditing(null); setForm({ name: '', description: '', sort_order: 0 }); }}>
-              Batal
-            </button>
-          )}
-        </div>
-      </form>
+      {error && !open && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
       <div className="table-wrap">
         <table>
@@ -128,7 +125,7 @@ export default function AdminCategoriesPage() {
                 </td>
                 <td>
                   <div className="flex flex-wrap gap-2">
-                    <button className="btn btn-secondary !px-3 !py-1.5 text-sm" onClick={() => { setEditing(item); setForm({ name: item.name, description: item.description || '', sort_order: item.sort_order || 0 }); }}>Edit</button>
+                    <button className="btn btn-secondary !px-3 !py-1.5 text-sm" onClick={() => openEdit(item)}>Edit</button>
                     <button className="btn btn-secondary !px-3 !py-1.5 text-sm" onClick={() => toggleActive(item)}>{item.is_active ? 'Nonaktifkan' : 'Aktifkan'}</button>
                     <button className="btn btn-danger !px-3 !py-1.5 text-sm" onClick={() => remove(item.id)}>Hapus</button>
                   </div>
@@ -137,8 +134,30 @@ export default function AdminCategoriesPage() {
             ))}
           </tbody>
         </table>
-        {items.length === 0 && <div className="p-8 text-center text-slate-500">Belum ada kategori</div>}
+        {items.length === 0 && <div className="p-8 text-center text-slate-500">Belum ada kategori. Klik + Tambah kategori.</div>}
       </div>
+
+      <Modal open={open} onClose={() => setOpen(false)} title={editing ? 'Edit kategori' : 'Tambah kategori'}>
+        <form onSubmit={save} className="space-y-4">
+          {error && <div className="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
+          <div>
+            <label className="label">Nama kategori</label>
+            <input className="field" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Contoh: Snack" required />
+          </div>
+          <div>
+            <label className="label">Urutan</label>
+            <input type="number" className="field" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })} />
+          </div>
+          <div>
+            <label className="label">Deskripsi</label>
+            <input className="field" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Opsional" />
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <button type="button" className="btn btn-secondary" onClick={() => setOpen(false)}>Batal</button>
+            <button type="submit" disabled={saving} className="btn btn-primary">{saving ? 'Menyimpan...' : editing ? 'Update' : 'Simpan'}</button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

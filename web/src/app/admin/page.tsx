@@ -48,20 +48,20 @@ export default function AdminDashboard() {
       </div>
 
       <section className="card p-5">
-        <h2 className="mb-3 font-bold text-slate-900">Alur kerja admin (sesuai kebutuhan awal)</h2>
+        <h2 className="mb-3 font-bold text-slate-900">Alur kerja admin</h2>
         <div className="grid gap-3 md:grid-cols-4">
           <div className="guide-step">
             <div className="guide-num">1</div>
             <div>
-              <div className="font-semibold text-slate-800">Buat menu H-1</div>
-              <div className="text-sm text-slate-500">Menu + item makanan/minuman</div>
+              <div className="font-semibold text-slate-800">Buat kategori & menu</div>
+              <div className="text-sm text-slate-500">Menu Catering (master, tanpa hari)</div>
             </div>
           </div>
           <div className="guide-step">
             <div className="guide-num">2</div>
             <div>
-              <div className="font-semibold text-slate-800">Publish</div>
-              <div className="text-sm text-slate-500">Status Aktif = tampil ke customer</div>
+              <div className="font-semibold text-slate-800">Publish harian</div>
+              <div className="text-sm text-slate-500">Pilih tanggal + menu yang dijual</div>
             </div>
           </div>
           <div className="guide-step">
@@ -79,8 +79,9 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
-        <div className="mt-4">
-          <Link href="/admin/menus/new" className="btn btn-primary">Mulai buat menu</Link>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link href="/admin/catalog" className="btn btn-secondary">Isi daftar menu</Link>
+          <Link href="/admin/menus" className="btn btn-primary">Publish harian</Link>
         </div>
       </section>
 
@@ -130,10 +131,10 @@ export default function AdminDashboard() {
           <h2 className="mb-4 font-bold text-slate-900">Aksi cepat</h2>
           <div className="grid grid-cols-2 gap-3">
             {[
-              { href: '/admin/menus/new', title: 'Buat menu', desc: 'Siapkan menu H-1' },
-              { href: '/admin/menus', title: 'Publish menu', desc: 'Aktifkan & salin link' },
+              { href: '/admin/categories', title: 'Kategori', desc: 'Kelompok menu' },
+              { href: '/admin/catalog', title: 'Daftar Menu', desc: 'Item + harga + foto' },
+              { href: '/admin/menus', title: 'Publish Harian', desc: 'Pilih tanggal & menu' },
               { href: '/admin/payments', title: 'Pembayaran', desc: 'Konfirmasi cash' },
-              { href: '/admin/reports', title: 'Laporan', desc: 'Pantau keuangan' },
             ].map((item) => (
               <Link
                 key={item.href}

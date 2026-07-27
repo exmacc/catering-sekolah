@@ -10,14 +10,17 @@ import { BrandLogo } from '@/components/BrandLogo';
 
 const mainNav = [
   { href: '/admin', label: 'Dashboard', icon: 'dashboard', exact: true },
-  { href: '/admin/categories', label: 'Kategori', icon: 'menu' },
-  { href: '/admin/catalog', label: 'Daftar Menu', icon: 'menu' },
-  { href: '/admin/menus', label: 'Menu Harian', icon: 'order' },
+  { href: '/admin/menus', label: 'Publish Harian', icon: 'order' },
   { href: '/admin/orders', label: 'Pesanan', icon: 'order' },
   { href: '/admin/finance', label: 'Keuangan', icon: 'payment' },
   { href: '/admin/payments', label: 'Pembayaran', icon: 'payment' },
   { href: '/admin/customers', label: 'Pelanggan', icon: 'users' },
   { href: '/admin/reports', label: 'Laporan', icon: 'report' },
+];
+
+const menuCateringChildren = [
+  { href: '/admin/categories', label: 'Kategori', icon: 'menu' },
+  { href: '/admin/catalog', label: 'Daftar Menu', icon: 'menu' },
 ];
 
 const settingsChildren = [
@@ -30,6 +33,10 @@ function isActive(pathname: string, href: string, exact?: boolean) {
   return pathname === href || pathname.startsWith(href + '/');
 }
 
+function isMenuCateringPath(pathname: string) {
+  return pathname.startsWith('/admin/categories') || pathname.startsWith('/admin/catalog') || pathname.startsWith('/admin/menu-catering');
+}
+
 function isSettingsPath(pathname: string) {
   return pathname.startsWith('/admin/settings') || pathname.startsWith('/admin/setup') || pathname.startsWith('/admin/pengaturan');
 }
@@ -40,6 +47,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
@@ -49,6 +57,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [user, loading, router]);
 
   useEffect(() => {
+    if (isMenuCateringPath(pathname)) setMenuOpen(true);
     if (isSettingsPath(pathname)) setSettingsOpen(true);
   }, [pathname]);
 
@@ -60,9 +69,48 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
+  const SubNav = ({
+    open,
+    setOpen,
+    label,
+    icon,
+    activeGroup,
+    childrenItems,
+    onClick,
+  }: {
+    open: boolean;
+    setOpen: (v: boolean | ((p: boolean) => boolean)) => void;
+    label: string;
+    icon: string;
+    activeGroup: boolean;
+    childrenItems: { href: string; label: string; icon: string }[];
+    onClick?: () => void;
+  }) => (
+    <div className="pt-1">
+      <button type="button" onClick={() => setOpen((v) => !v)} className={`admin-nav-link w-full ${activeGroup ? 'active' : ''}`}>
+        <Icon name={icon} />
+        <span className="flex-1 text-left">{label}</span>
+        <Icon name="chevron" className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="ml-3 mt-1 space-y-0.5 border-l border-slate-200 pl-2">
+          {childrenItems.map((item) => {
+            const active = isActive(pathname, item.href);
+            return (
+              <Link key={item.href} href={item.href} onClick={onClick} className={`admin-nav-link !py-2 text-sm ${active ? 'active' : ''}`}>
+                <Icon name={item.icon} className="h-4 w-4" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+
   const Nav = ({ onClick }: { onClick?: () => void }) => (
     <nav className="space-y-1">
-      {mainNav.map((item) => {
+      {mainNav.slice(0, 1).map((item) => {
         const active = isActive(pathname, item.href, item.exact);
         return (
           <Link key={item.href} href={item.href} onClick={onClick} className={`admin-nav-link ${active ? 'active' : ''}`}>
@@ -72,36 +120,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         );
       })}
 
-      <div className="pt-2">
-        <button
-          type="button"
-          onClick={() => setSettingsOpen((v) => !v)}
-          className={`admin-nav-link w-full ${isSettingsPath(pathname) ? 'active' : ''}`}
-        >
-          <Icon name="settings" />
-          <span className="flex-1 text-left">Pengaturan</span>
-          <Icon name="chevron" className={`h-4 w-4 transition-transform ${settingsOpen ? 'rotate-180' : ''}`} />
-        </button>
+      <SubNav
+        open={menuOpen}
+        setOpen={setMenuOpen}
+        label="Menu Catering"
+        icon="menu"
+        activeGroup={isMenuCateringPath(pathname)}
+        childrenItems={menuCateringChildren}
+        onClick={onClick}
+      />
 
-        {settingsOpen && (
-          <div className="ml-3 mt-1 space-y-0.5 border-l border-slate-200 pl-2">
-            {settingsChildren.map((item) => {
-              const active = isActive(pathname, item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={onClick}
-                  className={`admin-nav-link !py-2 text-sm ${active ? 'active' : ''}`}
-                >
-                  <Icon name={item.icon} className="h-4 w-4" />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      {mainNav.slice(1).map((item) => {
+        const active = isActive(pathname, item.href, item.exact);
+        return (
+          <Link key={item.href} href={item.href} onClick={onClick} className={`admin-nav-link ${active ? 'active' : ''}`}>
+            <Icon name={item.icon} />
+            <span>{item.label}</span>
+          </Link>
+        );
+      })}
+
+      <SubNav
+        open={settingsOpen}
+        setOpen={setSettingsOpen}
+        label="Pengaturan"
+        icon="settings"
+        activeGroup={isSettingsPath(pathname)}
+        childrenItems={settingsChildren}
+        onClick={onClick}
+      />
     </nav>
   );
 
