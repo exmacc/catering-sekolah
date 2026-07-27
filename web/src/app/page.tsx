@@ -55,11 +55,11 @@ export default function CustomerMenusPage() {
                 <span className="chip border border-blue-100 bg-blue-50 text-blue-700">Data tersimpan</span>
               </div>
             </div>
-            <div className="flex flex-col justify-between bg-blue-500 p-6 text-white sm:p-8">
+            <div className="flex flex-col justify-between bg-blue-600 p-6 sm:p-8">
               <div>
-                <div className="text-sm text-blue-100">Status akun</div>
-                <div className="mt-1 text-xl font-bold">{user ? `Halo, ${user.full_name}` : 'Belum login'}</div>
-                <p className="mt-2 text-sm text-blue-50/90">
+                <div className="text-sm font-medium text-blue-100">Status akun</div>
+                <div className="mt-1 text-xl font-bold text-white">{user ? `Halo, ${user.full_name}` : 'Belum login'}</div>
+                <p className="mt-2 text-sm text-blue-100">
                   {user
                     ? user.role === 'admin'
                       ? 'Kelola kategori, daftar menu, publish harian, dan keuangan lewat Panel Admin.'
@@ -68,24 +68,15 @@ export default function CustomerMenusPage() {
                 </p>
               </div>
               {!user ? (
-                <Link
-                  href="/auth/register"
-                  className="mt-6 inline-flex items-center justify-center rounded-xl border-2 border-white bg-white px-4 py-2.5 text-sm font-bold text-blue-700 shadow-sm hover:bg-blue-50"
-                >
+                <Link href="/auth/register" className="hero-cta-btn">
                   Daftar sekarang
                 </Link>
               ) : user.role === 'admin' ? (
-                <Link
-                  href="/admin/menus"
-                  className="mt-6 inline-flex items-center justify-center rounded-xl border-2 border-white bg-white px-4 py-2.5 text-sm font-bold text-blue-700 shadow-sm hover:bg-blue-50"
-                >
-                  Kelola & publish menu
+                <Link href="/admin/menus" className="hero-cta-btn">
+                  Kelola &amp; publish menu
                 </Link>
               ) : (
-                <Link
-                  href="/order/history"
-                  className="mt-6 inline-flex items-center justify-center rounded-xl border-2 border-white bg-white px-4 py-2.5 text-sm font-bold text-blue-700 shadow-sm hover:bg-blue-50"
-                >
+                <Link href="/order/history" className="hero-cta-btn">
                   Lihat riwayat pesanan
                 </Link>
               )}

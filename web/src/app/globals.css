@@ -83,6 +83,30 @@ button, input, select, textarea { font: inherit; }
   box-shadow: 0 8px 16px rgb(59 130 246 / 0.22);
 }
 
+/* CTA di panel biru hero — kontras tinggi, tidak warisi text-white parent */
+.hero-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1.5rem;
+  width: 100%;
+  border-radius: 0.9rem;
+  padding: 0.75rem 1rem;
+  background: #ffffff !important;
+  color: #1e3a8a !important;
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.2;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 14px rgb(15 23 42 / 0.15);
+  transition: 0.15s ease;
+}
+
+.hero-cta-btn:hover {
+  background: #eff6ff !important;
+  color: #1e40af !important;
+}
+
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
   filter: brightness(1.03);
