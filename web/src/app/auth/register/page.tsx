@@ -33,8 +33,20 @@ function RegisterForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+    if (!form.email.includes('@') || !form.email.includes('.')) {
+      setError('Format email tidak valid');
+      return;
+    }
+    if (form.password.length < 6) {
+      setError('Password minimal 6 karakter');
+      return;
+    }
     setLoading(true);
-    const result = await register(form);
+    const result = await register({
+      ...form,
+      email: form.email.trim().toLowerCase(),
+      full_name: form.full_name.trim(),
+    });
     setLoading(false);
     if (!result.success) {
       setError(result.error || 'Registrasi gagal');

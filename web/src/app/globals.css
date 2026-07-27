@@ -39,8 +39,14 @@ button, input, select, textarea { font: inherit; }
 }
 
 .shell {
-  width: min(1120px, calc(100% - 2rem));
+  width: min(1120px, calc(100% - 1.25rem));
   margin-inline: auto;
+}
+
+@media (min-width: 640px) {
+  .shell {
+    width: min(1120px, calc(100% - 2rem));
+  }
 }
 
 .card {
@@ -420,5 +426,56 @@ button, input, select, textarea { font: inherit; }
   .admin-main {
     padding: 1rem;
     padding-top: 4.5rem;
+  }
+}
+
+/* Mobile customer polish */
+@media (max-width: 640px) {
+  .page-title {
+    font-size: 1.35rem;
+    line-height: 1.25;
+  }
+
+  .card {
+    border-radius: 1rem;
+  }
+
+  .food-card-top {
+    min-height: 100px;
+    padding: 1rem;
+  }
+
+  .btn {
+    padding: 0.65rem 0.9rem;
+  }
+
+  .hero-cta-btn {
+    margin-top: 1rem;
+    padding: 0.7rem 0.9rem;
+  }
+
+  .auth-card {
+    width: 100%;
+    padding: 1.25rem;
+    border-radius: 1.15rem;
+  }
+
+  .auth-wrap {
+    padding: 1rem;
+    align-items: flex-start;
+    padding-top: 1.5rem;
+  }
+
+  .menu-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .table-wrap {
+    border-radius: 0.9rem;
+  }
+
+  .item-pill {
+    padding: 0.65rem 0.75rem;
   }
 }

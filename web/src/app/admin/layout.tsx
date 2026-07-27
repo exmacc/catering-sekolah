@@ -14,6 +14,7 @@ const mainNav = [
   { href: '/admin/orders', label: 'Pesanan', icon: 'order' },
   { href: '/admin/finance', label: 'Keuangan', icon: 'payment' },
   { href: '/admin/payments', label: 'Pembayaran', icon: 'payment' },
+  { href: '/admin/users', label: 'Kelola User', icon: 'users' },
   { href: '/admin/customers', label: 'Pelanggan', icon: 'users' },
   { href: '/admin/reports', label: 'Laporan', icon: 'report' },
 ];

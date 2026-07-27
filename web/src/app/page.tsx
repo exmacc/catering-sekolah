@@ -38,28 +38,31 @@ export default function CustomerMenusPage() {
     <div className="min-h-screen pb-16">
       <CustomerHeader />
 
-      <section className="shell pt-8 pb-4">
+      <section className="shell pt-4 pb-3 sm:pt-8 sm:pb-4">
         <div className="card overflow-hidden">
           <div className="grid md:grid-cols-[1.35fr_0.65fr]">
-            <div className="p-6 sm:p-8">
+            <div className="p-4 sm:p-6 md:p-8">
               <Badge tone="success">Menu harian siap dipesan</Badge>
               <h1 className="page-title mt-3 text-slate-900">
-                Pesan di {branding.business_name}<br className="hidden sm:block" /> lebih cepat & rapi
+                Pesan di {branding.business_name}
+                <span className="hidden sm:inline"><br /> lebih cepat & rapi</span>
               </h1>
-              <p className="page-sub max-w-xl">
+              <p className="page-sub max-w-xl text-sm sm:text-base">
                 {branding.tagline || 'Pilih makanan & minuman, tentukan metode bayar cash/transfer, serta periode harian, mingguan, atau bulanan.'}
               </p>
-              <div className="mt-5 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-1.5 sm:mt-5 sm:gap-2">
                 <span className="chip border border-blue-100 bg-blue-50 text-blue-700">Cash / Transfer</span>
                 <span className="chip border border-blue-100 bg-blue-50 text-blue-700">Harian · Mingguan · Bulanan</span>
                 <span className="chip border border-blue-100 bg-blue-50 text-blue-700">Data tersimpan</span>
               </div>
             </div>
-            <div className="flex flex-col justify-between bg-blue-600 p-6 sm:p-8">
+            <div className="flex flex-col justify-between bg-blue-600 p-4 sm:p-6 md:p-8">
               <div>
-                <div className="text-sm font-medium text-blue-100">Status akun</div>
-                <div className="mt-1 text-xl font-bold text-white">{user ? `Halo, ${user.full_name}` : 'Belum login'}</div>
-                <p className="mt-2 text-sm text-blue-100">
+                <div className="text-xs font-medium text-blue-100 sm:text-sm">Status akun</div>
+                <div className="mt-1 text-lg font-bold text-white sm:text-xl">
+                  {user ? `Halo, ${user.full_name}` : 'Belum login'}
+                </div>
+                <p className="mt-2 text-xs text-blue-100 sm:text-sm">
                   {user
                     ? user.role === 'admin'
                       ? 'Kelola kategori, daftar menu, publish harian, dan keuangan lewat Panel Admin.'
