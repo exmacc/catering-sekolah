@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { formatRupiah, formatDateShort } from '@/lib/utils';
 import { Badge } from '@/components/ui/Badge';
 import { Loading } from '@/components/ui/Loading';
@@ -23,14 +23,20 @@ const statusTone: Record<string, 'warning' | 'info' | 'success' | 'danger' | 'gr
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [methodFilter, setMethodFilter] = useState('');
+  const [periodFilter, setPeriodFilter] = useState('');
+  const [search, setSearch] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
+  const [expanded, setExpanded] = useState<string | null>(null);
 
-  useEffect(() => { fetchOrders(); }, [filter]);
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   async function fetchOrders() {
     setLoading(true);
-    const qs = filter ? `?status=${filter}` : '';
-    const res = await fetch(`/api/orders${qs}`);
+    const res = await fetch('/api/orders');
     const result = await res.json();
     if (result.success) setOrders(result.data || []);
     setLoading(false);
@@ -45,82 +51,184 @@ export default function AdminOrdersPage() {
     fetchOrders();
   }
 
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return orders.filter((o) => {
+      if (statusFilter && o.status !== statusFilter) return false;
+      if (methodFilter && o.payment_method !== methodFilter) return false;
+      if (periodFilter && o.payment_period !== periodFilter) return false;
+      if (dateFilter && o.delivery_date !== dateFilter) return false;
+      if (q) {
+        const name = o.customer?.user?.full_name?.toLowerCase() || '';
+        const child = o.customer?.child_name?.toLowerCase() || '';
+        const cls = o.customer?.child_class?.toLowerCase() || '';
+        const items = (o.items || []).map((i: any) => i.menu_item?.name?.toLowerCase() || '').join(' ');
+        const notes = (o.notes || '').toLowerCase();
+        if (![name, child, cls, items, notes].some((s) => s.includes(q))) return false;
+      }
+      return true;
+    });
+  }, [orders, statusFilter, methodFilter, periodFilter, dateFilter, search]);
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3">
-        <div>
-          <h1 className="page-title">Pesanan</h1>
-          <p className="page-sub">Kelola & konfirmasi pesanan customer</p>
-        </div>
+      <div>
+        <h1 className="page-title">Pesanan</h1>
+        <p className="page-sub">Tabel pesanan — filter status, metode, periode, tanggal, dan pemesan</p>
+      </div>
+
+      <div className="card space-y-3 p-4">
         <div className="flex flex-wrap gap-2">
           {['', 'pending', 'confirmed', 'delivered', 'cancelled'].map((s) => (
             <button
               key={s}
-              onClick={() => setFilter(s)}
-              className={`btn !py-2 !px-3 text-sm ${filter === s ? 'btn-primary' : 'btn-secondary'}`}
+              type="button"
+              onClick={() => setStatusFilter(s)}
+              className={`btn !px-3 !py-1.5 text-sm ${statusFilter === s ? 'btn-primary' : 'btn-secondary'}`}
             >
-              {s ? statusLabel[s] : 'Semua'}
+              {s ? statusLabel[s] : 'Semua status'}
             </button>
           ))}
         </div>
+
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          <input
+            className="field"
+            placeholder="Cari pemesan / anak / kelas / item..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <select className="field" value={methodFilter} onChange={(e) => setMethodFilter(e.target.value)}>
+            <option value="">Semua metode</option>
+            <option value="cash">Cash</option>
+            <option value="transfer">Transfer</option>
+          </select>
+          <select className="field" value={periodFilter} onChange={(e) => setPeriodFilter(e.target.value)}>
+            <option value="">Semua periode</option>
+            <option value="daily">Harian</option>
+            <option value="weekly">Mingguan</option>
+            <option value="monthly">Bulanan</option>
+          </select>
+          <input type="date" className="field" value={dateFilter} onChange={(e) => setDateFilter(e.target.value)} />
+        </div>
+        <div className="text-xs text-slate-500">{filtered.length} dari {orders.length} pesanan</div>
       </div>
 
       {loading ? (
         <Loading />
       ) : (
-        <div className="space-y-4">
-          {orders.map((order) => (
-            <article key={order.id} className="card p-5">
-              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                <div>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    <Badge tone={statusTone[order.status]}>{statusLabel[order.status]}</Badge>
-                    <Badge tone={order.payment_method === 'cash' ? 'purple' : 'info'}>
-                      {order.payment_method === 'cash' ? 'Cash' : 'Transfer'}
-                    </Badge>
-                    <Badge tone="gray">
-                      {order.payment_period === 'daily' ? 'Harian' : order.payment_period === 'weekly' ? 'Mingguan' : 'Bulanan'}
-                    </Badge>
-                  </div>
-                  <div className="font-bold text-slate-900">{order.customer?.user?.full_name || 'Pelanggan'}</div>
-                  {order.customer?.customer_type === 'parent' && (
-                    <div className="text-sm text-slate-500">{order.customer?.child_name} · {order.customer?.child_class}</div>
-                  )}
-                  <div className="text-sm text-slate-500 mt-1">{formatDateShort(order.delivery_date)}</div>
-                </div>
-                <div className="text-left lg:text-right">
-                  <div className="text-xs text-slate-500">Total</div>
-                  <div className="text-xl font-extrabold text-blue-700">{formatRupiah(order.total_amount)}</div>
-                </div>
-              </div>
-
-              <div className="mt-4 rounded-2xl bg-slate-50 border border-slate-100 p-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {order.items?.map((item: any) => (
-                  <div key={item.id} className="text-sm text-slate-600">
-                    {item.menu_item?.name} × {item.quantity}
-                  </div>
-                ))}
-              </div>
-
-              {order.notes && (
-                <div className="mt-3 rounded-xl border border-amber-100 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-                  <span className="font-semibold">Catatan customer:</span> {order.notes}
-                </div>
-              )}
-
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                {order.status === 'pending' && (
-                  <>
-                    <ActionIcon icon="check" label="Konfirmasi" tone="primary" onClick={() => updateStatus(order.id, 'confirmed')} />
-                    <ActionIcon icon="close" label="Batalkan" tone="danger" onClick={() => updateStatus(order.id, 'cancelled')} />
-                  </>
-                )}
-                {order.status === 'confirmed' && (
-                  <ActionIcon icon="done" label="Tandai selesai" tone="success" onClick={() => updateStatus(order.id, 'delivered')} />
-                )}
-              </div>
-            </article>
-          ))}
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Pemesan</th>
+                <th>Item</th>
+                <th>Metode</th>
+                <th>Periode</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((order) => {
+                const itemSummary = (order.items || [])
+                  .map((i: any) => `${i.menu_item?.name || 'Item'}×${i.quantity}`)
+                  .join(', ');
+                const isOpen = expanded === order.id;
+                return (
+                  <Fragment key={order.id}>
+                    <tr className="align-top">
+                      <td className="whitespace-nowrap text-sm text-slate-600">
+                        {formatDateShort(order.delivery_date)}
+                      </td>
+                      <td>
+                        <div className="font-semibold text-slate-800">{order.customer?.user?.full_name || 'Pelanggan'}</div>
+                        {order.customer?.customer_type === 'parent' && (
+                          <div className="text-xs text-slate-500">
+                            {order.customer?.child_name} · {order.customer?.child_class}
+                          </div>
+                        )}
+                        {order.customer?.customer_type === 'teacher' && (
+                          <div className="text-xs text-slate-500">Guru</div>
+                        )}
+                      </td>
+                      <td className="max-w-[220px]">
+                        <div className="truncate text-sm text-slate-700" title={itemSummary}>
+                          {itemSummary || '-'}
+                        </div>
+                        <button
+                          type="button"
+                          className="mt-1 text-xs font-semibold text-blue-600 hover:underline"
+                          onClick={() => setExpanded(isOpen ? null : order.id)}
+                        >
+                          {isOpen ? 'Sembunyikan' : 'Detail'}
+                        </button>
+                      </td>
+                      <td>
+                        <Badge tone={order.payment_method === 'cash' ? 'gray' : 'info'}>
+                          {order.payment_method === 'cash' ? 'Cash' : 'Transfer'}
+                        </Badge>
+                      </td>
+                      <td>
+                        <Badge tone="gray">
+                          {order.payment_period === 'daily' ? 'Harian' : order.payment_period === 'weekly' ? 'Mingguan' : 'Bulanan'}
+                        </Badge>
+                      </td>
+                      <td>
+                        <Badge tone={statusTone[order.status]}>{statusLabel[order.status]}</Badge>
+                      </td>
+                      <td className="whitespace-nowrap font-bold text-blue-700">{formatRupiah(order.total_amount)}</td>
+                      <td>
+                        <div className="inline-flex gap-1.5">
+                          {order.status === 'pending' && (
+                            <>
+                              <ActionIcon icon="check" label="Konfirmasi" tone="primary" onClick={() => updateStatus(order.id, 'confirmed')} />
+                              <ActionIcon icon="close" label="Batalkan" tone="danger" onClick={() => updateStatus(order.id, 'cancelled')} />
+                            </>
+                          )}
+                          {order.status === 'confirmed' && (
+                            <ActionIcon icon="done" label="Tandai selesai" tone="success" onClick={() => updateStatus(order.id, 'delivered')} />
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                    {isOpen && (
+                      <tr>
+                        <td colSpan={8} className="bg-slate-50">
+                          <div className="space-y-2 p-3 text-sm">
+                            <div className="font-semibold text-slate-800">Rincian item</div>
+                            <div className="grid gap-1 sm:grid-cols-2">
+                              {(order.items || []).map((item: any) => (
+                                <div key={item.id} className="flex justify-between rounded-lg bg-white px-3 py-2">
+                                  <span>
+                                    {item.menu_item?.name} × {item.quantity}
+                                  </span>
+                                  <span className="font-medium">{formatRupiah(item.subtotal || 0)}</span>
+                                </div>
+                              ))}
+                            </div>
+                            {order.notes && (
+                              <div className="rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-amber-900">
+                                <b>Catatan:</b> {order.notes}
+                              </div>
+                            )}
+                            {order.customer?.user?.phone && (
+                              <div className="text-slate-600">
+                                WA: <b>{order.customer.user.phone}</b>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+          {filtered.length === 0 && <div className="p-10 text-center text-slate-500">Tidak ada pesanan sesuai filter</div>}
         </div>
       )}
     </div>

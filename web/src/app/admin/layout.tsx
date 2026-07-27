@@ -12,6 +12,7 @@ const mainNav = [
   { href: '/admin', label: 'Dashboard', icon: 'dashboard', exact: true },
   { href: '/admin/menus', label: 'Publish Harian', icon: 'order' },
   { href: '/admin/orders', label: 'Pesanan', icon: 'order' },
+  { href: '/admin/billing', label: 'Tagihan', icon: 'payment' },
   { href: '/admin/finance', label: 'Keuangan', icon: 'payment' },
   { href: '/admin/payments', label: 'Pembayaran', icon: 'payment' },
   { href: '/admin/customers', label: 'Pelanggan', icon: 'users' },

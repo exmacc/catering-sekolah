@@ -97,6 +97,16 @@ ALTER TABLE catalog_items ADD COLUMN IF NOT EXISTS image_url TEXT;
 ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS bank_name TEXT;
 ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS bank_account_number TEXT;
 ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS bank_account_name TEXT;
+
+-- Jadwal tagihan
+ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS billing_auto_enabled BOOLEAN DEFAULT false;
+ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS billing_daily_time TEXT DEFAULT '18:00';
+ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS billing_weekly_day INTEGER DEFAULT 5;
+ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS billing_monthly_day INTEGER DEFAULT 1;
+ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS billing_wa_template TEXT;
+ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payment_period TEXT;
+ALTER TABLE invoices ADD COLUMN IF NOT EXISTS wa_sent_at TIMESTAMPTZ;
+ALTER TABLE invoices ADD COLUMN IF NOT EXISTS wa_phone TEXT;
 `;
 
 export default function AdminSetupPage() {
