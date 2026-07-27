@@ -122,6 +122,7 @@ export default function AdminUsersPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
+          <p className="mb-1 text-sm font-medium text-blue-600">Pengaturan → Kelola User</p>
           <h1 className="page-title">Kelola User</h1>
           <p className="page-sub">Tambah admin / customer (email + password). Customer juga bisa daftar sendiri.</p>
         </div>

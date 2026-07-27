@@ -16,13 +16,16 @@ export async function GET(req: NextRequest) {
     if (status) query = query.eq('status', status);
     if (date) query = query.eq('available_date', date);
     if (customerView) {
-      query = query.gte('available_date', new Date().toISOString().split('T')[0]);
+      // Indonesia (WIB) date — avoid UTC midnight cutting off "today" menus
+      const wib = new Date(Date.now() + 7 * 60 * 60 * 1000);
+      const todayWib = wib.toISOString().slice(0, 10);
+      query = query.eq('status', 'active').gte('available_date', todayWib);
     }
 
     const { data, error } = await query;
     if (error) throw error;
 
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({ success: true, data: data || [] });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

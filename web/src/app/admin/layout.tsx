@@ -14,7 +14,6 @@ const mainNav = [
   { href: '/admin/orders', label: 'Pesanan', icon: 'order' },
   { href: '/admin/finance', label: 'Keuangan', icon: 'payment' },
   { href: '/admin/payments', label: 'Pembayaran', icon: 'payment' },
-  { href: '/admin/users', label: 'Kelola User', icon: 'users' },
   { href: '/admin/customers', label: 'Pelanggan', icon: 'users' },
   { href: '/admin/reports', label: 'Laporan', icon: 'report' },
 ];
@@ -26,6 +25,7 @@ const menuCateringChildren = [
 
 const settingsChildren = [
   { href: '/admin/settings', label: 'Nama & Logo', icon: 'brand' },
+  { href: '/admin/users', label: 'Kelola User', icon: 'users' },
   { href: '/admin/setup', label: 'Setup Database', icon: 'database' },
 ];
 
@@ -39,7 +39,12 @@ function isMenuCateringPath(pathname: string) {
 }
 
 function isSettingsPath(pathname: string) {
-  return pathname.startsWith('/admin/settings') || pathname.startsWith('/admin/setup') || pathname.startsWith('/admin/pengaturan');
+  return (
+    pathname.startsWith('/admin/settings') ||
+    pathname.startsWith('/admin/setup') ||
+    pathname.startsWith('/admin/pengaturan') ||
+    pathname.startsWith('/admin/users')
+  );
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

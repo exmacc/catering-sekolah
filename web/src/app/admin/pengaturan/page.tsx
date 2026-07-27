@@ -11,6 +11,12 @@ const items = [
     icon: 'brand',
   },
   {
+    href: '/admin/users',
+    title: 'Kelola User',
+    desc: 'Tambah admin atau customer (email + password), aktif/nonaktif akun.',
+    icon: 'users',
+  },
+  {
     href: '/admin/setup',
     title: 'Setup Database',
     desc: 'Jalankan migrasi SQL Supabase dan cek kesiapan tabel (kategori, menu, keuangan, branding).',

@@ -102,8 +102,22 @@ export default function CustomerMenusPage() {
         ) : menus.length === 0 ? (
           <EmptyState
             title="Belum ada menu tersedia"
-            description="Admin belum mempublikasikan menu untuk hari ini. Silakan cek kembali nanti."
-            action={!user ? <Link href="/auth/register" className="btn btn-primary">Daftar dulu</Link> : undefined}
+            description={
+              user?.role === 'admin'
+                ? 'Menu di Daftar Menu belum otomatis tampil. Buka Publish Harian → pilih tanggal + menu → Simpan publish.'
+                : 'Admin belum mempublikasikan menu untuk hari ini. Silakan cek kembali nanti.'
+            }
+            action={
+              user?.role === 'admin' ? (
+                <Link href="/admin/menus" className="btn btn-primary">
+                  Ke Publish Harian
+                </Link>
+              ) : !user ? (
+                <Link href="/auth/register" className="btn btn-primary">
+                  Daftar dulu
+                </Link>
+              ) : undefined
+            }
           />
         ) : (
           <div className="menu-grid">

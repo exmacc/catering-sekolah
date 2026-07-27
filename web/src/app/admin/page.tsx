@@ -134,7 +134,7 @@ export default function AdminDashboard() {
               { href: '/admin/categories', title: 'Kategori', desc: 'Kelompok menu' },
               { href: '/admin/catalog', title: 'Daftar Menu', desc: 'Item + harga + foto' },
               { href: '/admin/menus', title: 'Publish Harian', desc: 'Pilih tanggal & menu' },
-              { href: '/admin/users', title: 'Kelola User', desc: 'Tambah admin/customer' },
+              { href: '/admin/payments', title: 'Pembayaran', desc: 'Konfirmasi cash' },
             ].map((item) => (
               <Link
                 key={item.href}
