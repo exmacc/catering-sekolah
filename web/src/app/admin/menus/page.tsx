@@ -29,6 +29,7 @@ export default function AdminMenusPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({
@@ -69,6 +70,7 @@ export default function AdminMenusPage() {
 
   function openCreate() {
     const today = new Date().toISOString().split('T')[0];
+    setEditingId(null);
     setForm({
       name: `Menu ${formatDateShort(today)}`,
       description: '',
@@ -76,6 +78,29 @@ export default function AdminMenusPage() {
       publish_now: true,
     });
     setSelected({});
+    setError('');
+    setOpen(true);
+  }
+
+  function openEdit(menu: Menu) {
+    setEditingId(menu.id);
+    setForm({
+      name: menu.name,
+      description: menu.description || '',
+      available_date: menu.available_date,
+      publish_now: menu.status === 'active',
+    });
+    const sel: Record<string, boolean> = {};
+    for (const item of menu.items || []) {
+      if (item.catalog_item_id) {
+        sel[item.catalog_item_id] = true;
+      } else {
+        // match by name+price if no catalog link
+        const match = catalog.find((c) => c.name === item.name && c.price === item.price);
+        if (match) sel[match.id] = true;
+      }
+    }
+    setSelected(sel);
     setError('');
     setOpen(true);
   }
@@ -100,41 +125,64 @@ export default function AdminMenusPage() {
     setError('');
 
     const name = form.name.trim() || `Menu ${formatDateShort(form.available_date)}`;
-    const res = await fetch('/api/menus', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name,
-        description: form.description,
-        available_date: form.available_date,
-        created_by: user?.id,
-        items: picked.map((i) => ({
-          name: i.name,
-          description: i.description,
-          price: i.price,
-          category: i.category?.name?.toLowerCase().includes('minum') ? 'drink' : 'food',
-          image_url: i.image_url || null,
-          catalog_item_id: i.id,
-        })),
-      }),
-    });
-    const result = await res.json();
-    if (!result.success) {
-      setSaving(false);
-      setError(result.error || 'Gagal publish');
-      return;
-    }
+    const itemsPayload = picked.map((i) => ({
+      name: i.name,
+      description: i.description,
+      price: i.price,
+      category: i.category?.name?.toLowerCase().includes('minum') ? 'drink' : 'food',
+      image_url: i.image_url || null,
+      catalog_item_id: i.id,
+    }));
 
-    if (!form.publish_now && result.data?.id) {
-      await fetch(`/api/menus/${result.data.id}`, {
+    if (editingId) {
+      const res = await fetch(`/api/menus/${editingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'closed' }),
+        body: JSON.stringify({
+          name,
+          description: form.description,
+          available_date: form.available_date,
+          status: form.publish_now ? 'active' : 'closed',
+          items: itemsPayload,
+        }),
       });
+      const result = await res.json();
+      setSaving(false);
+      if (!result.success) {
+        setError(result.error || 'Gagal update');
+        return;
+      }
+    } else {
+      const res = await fetch('/api/menus', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          description: form.description,
+          available_date: form.available_date,
+          created_by: user?.id,
+          items: itemsPayload,
+        }),
+      });
+      const result = await res.json();
+      if (!result.success) {
+        setSaving(false);
+        setError(result.error || 'Gagal publish');
+        return;
+      }
+
+      if (!form.publish_now && result.data?.id) {
+        await fetch(`/api/menus/${result.data.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'closed' }),
+        });
+      }
+      setSaving(false);
     }
 
-    setSaving(false);
     setOpen(false);
+    setEditingId(null);
     loadAll();
   }
 
@@ -173,18 +221,44 @@ export default function AdminMenusPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="page-title">Publish Harian</h1>
-          <p className="page-sub">Pilih tanggal + menu master yang sudah ada, lalu publish ke customer</p>
+          <p className="page-sub">Pilih tanggal + menu master, publish, atau edit publish yang sudah ada</p>
         </div>
-        <button type="button" onClick={openCreate} className="btn btn-primary">+ Publish menu hari</button>
+        <button type="button" onClick={openCreate} className="btn btn-primary">
+          + Publish menu hari
+        </button>
       </div>
 
       <section className="card p-5">
         <h2 className="mb-3 font-bold text-slate-900">Alur yang benar</h2>
         <div className="grid gap-3 md:grid-cols-4">
-          <div className="guide-step"><div className="guide-num">1</div><div><div className="font-semibold text-slate-800">Buat kategori</div><div className="text-sm text-slate-500">Menu Catering → Kategori</div></div></div>
-          <div className="guide-step"><div className="guide-num">2</div><div><div className="font-semibold text-slate-800">Isi daftar menu</div><div className="text-sm text-slate-500">Menu + harga + foto per kategori</div></div></div>
-          <div className="guide-step"><div className="guide-num">3</div><div><div className="font-semibold text-slate-800">Publish harian</div><div className="text-sm text-slate-500">Pilih tanggal & menu yang mau dijual</div></div></div>
-          <div className="guide-step"><div className="guide-num">4</div><div><div className="font-semibold text-slate-800">Kirim link</div><div className="text-sm text-slate-500">Salin / WA ke customer</div></div></div>
+          <div className="guide-step">
+            <div className="guide-num">1</div>
+            <div>
+              <div className="font-semibold text-slate-800">Buat kategori</div>
+              <div className="text-sm text-slate-500">Menu Catering → Kategori</div>
+            </div>
+          </div>
+          <div className="guide-step">
+            <div className="guide-num">2</div>
+            <div>
+              <div className="font-semibold text-slate-800">Isi daftar menu</div>
+              <div className="text-sm text-slate-500">Menu + harga + foto per kategori</div>
+            </div>
+          </div>
+          <div className="guide-step">
+            <div className="guide-num">3</div>
+            <div>
+              <div className="font-semibold text-slate-800">Publish harian</div>
+              <div className="text-sm text-slate-500">Pilih tanggal & menu yang mau dijual</div>
+            </div>
+          </div>
+          <div className="guide-step">
+            <div className="guide-num">4</div>
+            <div>
+              <div className="font-semibold text-slate-800">Kirim link</div>
+              <div className="text-sm text-slate-500">Salin / WA ke customer</div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -192,7 +266,11 @@ export default function AdminMenusPage() {
         <EmptyState
           title="Belum ada publish harian"
           description="Pastikan Daftar Menu sudah terisi, lalu publish untuk tanggal tertentu."
-          action={<button type="button" onClick={openCreate} className="btn btn-primary">Publish menu hari</button>}
+          action={
+            <button type="button" onClick={openCreate} className="btn btn-primary">
+              Publish menu hari
+            </button>
+          }
         />
       ) : (
         <div className="space-y-4">
@@ -208,10 +286,13 @@ export default function AdminMenusPage() {
                   </div>
                   <p className="text-sm text-slate-500">Tanggal saji: {formatDateShort(menu.available_date)}</p>
                   {menu.status === 'active' && (
-                    <div className="mt-2 break-all rounded-lg bg-slate-50 px-3 py-2 font-mono text-xs text-slate-600">/order/{menu.id}</div>
+                    <div className="mt-2 break-all rounded-lg bg-slate-50 px-3 py-2 font-mono text-xs text-slate-600">
+                      /order/{menu.id}
+                    </div>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-1.5">
+                  <ActionIcon icon="edit" label="Edit publish" onClick={() => openEdit(menu)} />
                   {menu.status === 'active' ? (
                     <ActionIcon
                       icon="eyeOff"
@@ -272,7 +353,15 @@ export default function AdminMenusPage() {
         </div>
       )}
 
-      <Modal open={open} onClose={() => setOpen(false)} title="Publish menu untuk tanggal" wide>
+      <Modal
+        open={open}
+        onClose={() => {
+          setOpen(false);
+          setEditingId(null);
+        }}
+        title={editingId ? 'Edit publish harian' : 'Publish menu untuk tanggal'}
+        wide
+      >
         <form onSubmit={savePublish} className="space-y-4">
           {error && <div className="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
 
@@ -347,14 +436,28 @@ export default function AdminMenusPage() {
           </div>
 
           <label className="flex items-center gap-2 text-sm text-slate-700">
-            <input type="checkbox" checked={form.publish_now} onChange={(e) => setForm({ ...form, publish_now: e.target.checked })} className="accent-blue-600" />
+            <input
+              type="checkbox"
+              checked={form.publish_now}
+              onChange={(e) => setForm({ ...form, publish_now: e.target.checked })}
+              className="accent-blue-600"
+            />
             Langsung aktif (tampil ke customer)
           </label>
 
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" className="btn btn-secondary" onClick={() => setOpen(false)}>Batal</button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => {
+                setOpen(false);
+                setEditingId(null);
+              }}
+            >
+              Batal
+            </button>
             <button type="submit" disabled={saving || catalog.length === 0} className="btn btn-primary">
-              {saving ? 'Menyimpan...' : 'Simpan publish'}
+              {saving ? 'Menyimpan...' : editingId ? 'Update publish' : 'Simpan publish'}
             </button>
           </div>
         </form>

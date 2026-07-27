@@ -92,6 +92,11 @@ CREATE POLICY "service_settings" ON app_settings FOR ALL USING (true) WITH CHECK
 
 -- Foto item master menu
 ALTER TABLE catalog_items ADD COLUMN IF NOT EXISTS image_url TEXT;
+
+-- Rekening transfer
+ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS bank_name TEXT;
+ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS bank_account_number TEXT;
+ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS bank_account_name TEXT;
 `;
 
 export default function AdminSetupPage() {

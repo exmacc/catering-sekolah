@@ -6,6 +6,9 @@ const DEFAULTS = {
   business_name: 'Catering Sekolah',
   tagline: 'Pesan mudah • Bayar fleksibel',
   logo_url: null as string | null,
+  bank_name: '',
+  bank_account_number: '',
+  bank_account_name: '',
 };
 
 export async function GET() {
@@ -17,11 +20,19 @@ export async function GET() {
       .maybeSingle();
 
     if (error) {
-      // Table may not exist yet
       return NextResponse.json({ success: true, data: DEFAULTS, warning: error.message });
     }
 
-    return NextResponse.json({ success: true, data: data || DEFAULTS });
+    return NextResponse.json({
+      success: true,
+      data: {
+        ...DEFAULTS,
+        ...(data || {}),
+        bank_name: data?.bank_name || '',
+        bank_account_number: data?.bank_account_number || '',
+        bank_account_name: data?.bank_account_name || '',
+      },
+    });
   } catch (error: any) {
     return NextResponse.json({ success: true, data: DEFAULTS, warning: error.message });
   }
@@ -35,7 +46,6 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Nama catering wajib diisi' }, { status: 400 });
     }
 
-    // Limit logo data URL size (~700KB raw string ~ safe for JSON)
     let logo_url = body.logo_url ?? null;
     if (typeof logo_url === 'string' && logo_url.length > 900_000) {
       return NextResponse.json({ success: false, error: 'Logo terlalu besar. Maks ~500KB. Kompres dulu.' }, { status: 400 });
@@ -47,6 +57,9 @@ export async function PUT(req: NextRequest) {
       business_name,
       tagline: body.tagline?.trim() || 'Pesan mudah • Bayar fleksibel',
       logo_url,
+      bank_name: body.bank_name?.trim() || null,
+      bank_account_number: body.bank_account_number?.trim() || null,
+      bank_account_name: body.bank_account_name?.trim() || null,
       updated_at: new Date().toISOString(),
       updated_by: body.updated_by || null,
     };

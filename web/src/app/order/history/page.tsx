@@ -9,6 +9,7 @@ import { CustomerHeader } from '@/components/customer/CustomerHeader';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Loading } from '@/components/ui/Loading';
 import { Badge } from '@/components/ui/Badge';
+import { BankTransferInfo } from '@/components/BankTransferInfo';
 
 const statusTone: Record<string, 'warning' | 'info' | 'success' | 'danger'> = {
   pending: 'warning',
@@ -94,6 +95,11 @@ export default function OrderHistoryPage() {
                 {order.notes && (
                   <div className="mt-3 rounded-xl border border-amber-100 bg-amber-50 px-3 py-2 text-sm text-amber-900">
                     <span className="font-semibold">Catatan:</span> {order.notes}
+                  </div>
+                )}
+                {order.payment_method === 'transfer' && order.status !== 'cancelled' && (
+                  <div className="mt-3">
+                    <BankTransferInfo amount={order.total_amount} />
                   </div>
                 )}
               </article>

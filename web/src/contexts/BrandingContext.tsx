@@ -6,12 +6,18 @@ export interface Branding {
   business_name: string;
   tagline: string;
   logo_url: string | null;
+  bank_name: string;
+  bank_account_number: string;
+  bank_account_name: string;
 }
 
 const DEFAULTS: Branding = {
   business_name: 'Catering Sekolah',
   tagline: 'Pesan mudah • Bayar fleksibel',
   logo_url: null,
+  bank_name: '',
+  bank_account_number: '',
+  bank_account_name: '',
 };
 
 interface BrandingContextType {
@@ -41,6 +47,9 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
           business_name: result.data.business_name || DEFAULTS.business_name,
           tagline: result.data.tagline || DEFAULTS.tagline,
           logo_url: result.data.logo_url || null,
+          bank_name: result.data.bank_name || '',
+          bank_account_number: result.data.bank_account_number || '',
+          bank_account_name: result.data.bank_account_name || '',
         });
       }
     } catch {

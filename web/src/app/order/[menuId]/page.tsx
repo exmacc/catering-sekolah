@@ -9,6 +9,7 @@ import { formatRupiah, formatDateShort } from '@/lib/utils';
 import { CustomerHeader } from '@/components/customer/CustomerHeader';
 import { Loading } from '@/components/ui/Loading';
 import { Badge } from '@/components/ui/Badge';
+import { BankTransferInfo } from '@/components/BankTransferInfo';
 
 export default function OrderPage() {
   const { user, loading: authLoading } = useAuth();
@@ -224,7 +225,7 @@ export default function OrderPage() {
               <div className="grid grid-cols-2 gap-2">
                 {([
                   { id: 'cash', label: 'Cash', desc: 'Bayar di tempat' },
-                  { id: 'transfer', label: 'Transfer', desc: 'Via rekening/VA' },
+                  { id: 'transfer', label: 'Transfer', desc: 'Via rekening' },
                 ] as const).map((opt) => (
                   <button
                     key={opt.id}
@@ -237,6 +238,11 @@ export default function OrderPage() {
                   </button>
                 ))}
               </div>
+              {paymentMethod === 'transfer' && (
+                <div className="mt-3">
+                  <BankTransferInfo amount={getTotal()} />
+                </div>
+              )}
             </section>
 
             <section className="card p-5">
